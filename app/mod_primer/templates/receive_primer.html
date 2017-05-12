@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="well bs-component">
+            <form action="{{ url_for('primer.receive_primer') }}" method="post" class="form-horizontal">
+                <fieldset>
+
+                    <legend>Receive Primer</legend>
+
+                    {% if message %}
+                    <div class="alert alert-{{ modifier }}">{{ message }}</div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        {{ form.primer.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.primer(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.lot_no.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.lot_no(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.dt_received.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.dt_received(class='datepicker form-control') }}
+                        </div>
+                        {{ form.hidden_tag() }}
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+    {% endblock %}

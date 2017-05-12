@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1><strong><span class="glyphicon glyphicon-asterisk"></span> {{ freezer.name }}</h1></strong>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well bs-component">
+                         <table class="table table-striped">
+                                <td>Location</td>
+                                <td>{{ freezer.location }}</td>
+                            </tr>
+                            <tr>
+                                <td>User</td>
+                                <td>{{ freezer.user_rel.username }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h4>This Freezer Contains</h4>
+        </div>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped">
+                <thead>
+                    <th>Name</th>
+                </thead>
+                {% for box in boxes %}
+                <tr>
+                    <td>{{ box.name }}</td>
+                </tr>
+                {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

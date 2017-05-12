@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1><strong><span class="glyphicon glyphicon-briefcase"></span> {{ box.name }}</h1></strong>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h2>Box Status</h2>
+            <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-danger" style="width: {{ percent_full }}%">{{ percent_full }}% Full</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well bs-component">
+                        <table class="table table-striped">
+                        {% for row in box_layout %}
+                            <tr>
+                                {% for column in box_layout[row] %}
+                                    <td class="text-center">
+                                        {% if box_layout[row][column] == "Empty" %}
+                                            <a href="{{ url_for('box.fill_box',box_id=box.id,row=row,column=column) }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Fill</a>
+                                        {% else %}
+                                            {% if box_layout[row][column]|int != 0  %}
+                                                {{ box_layout[row][column] }}
+                                            {% elif box_layout[row][column] != '' %}
+                                                <a href="/primer/detail/{{ box_layout[row][column].id }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-resize-small"></span> {{ box_layout[row][column].alias }}</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <div class="row">
+                <div class="col-md-7">
+                    <h3><span class="glyphicon glyphicon-shopping-cart"></span> <strong>Saved Cart:</strong> {{name}}</h3>
+                </div>
+                <div class="col-md-5 text-right">
+
+
+                    {% include "with_selected.html" %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+
+            <table class="table table-striped" id="primers">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Alias</th>
+                    <th>Application</th>
+                    <th>Designed</th>
+                    <th>Checked</th>
+                    <th>Ordered</th>
+                    <th>Received</th>
+                    <th>Reconstitued</th>
+                    <th>Acceptance Tested</th>
+                    <th>LTS Location</th>
+                    <th>Aliquots</th>
+                </tr>
+                </thead>
+                {% for i in primers %}
+                <tr>
+                    <td>{{ i[0].id }}</td>
+                    <td><h6><a href="/primer/detail/{{i[0].id}}">{{ i[0].alias }}</a></h6></td>
+                    <td><h6>{{ i[0].application_rel.name }}</h6></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_designed)|safe }}</h5></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_checked)|safe }}</h5></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_ordered)|safe }}</h5></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_received)|safe }}</h5></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_reconstituted)|safe }}</h5></td>
+                    <td><h5>{{ get_glyphicon(i[0].date_acceptance)|safe }}</h5></td>
+                    {% if i.box_rel %}
+                    <td>
+                        <h6>
+                            <a href="{{ url_for('box.view_box_detail',box_id=i[0].box_rel.id)}}">{{ i[0].box_rel.name
+                                }}</a> | {{ i[0].row }} | {{ i[0].column }}
+                        </h6>
+                    </td>
+                    {% else %}
+                    <td>
+                        <h6>
+                            No Location
+                        </h6>
+                    </td>
+                    {% endif %}
+                    <td>
+                        <h6>
+                            {% for i in range(i[1]) %}
+                            <span class="glyphicon glyphicon-tint"></span>
+                            {% endfor %}
+                        </h6>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-right">
+        <div class="well bs-component">
+            <form action="{{url_for('primer.delete_saved_cart')}}" method="post" class="form-inline">
+                <input type="hidden" name="name" value="{{name}}">
+                <button type="submit" class="btn btn-danger btn-sm"><span
+                        class="glyphicon glyphicon-trash"></span> Delete Saved Cart</button>
+
+
+                </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="{{url_for('primer.bulk_at')}}" method="post">
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-ok"></span> Bulk Acceptance Test Primers</h3>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped">
+                <thead>
+                    <th>Alias</th>
+                    <th>Worklist</th>
+                    <th>Date Acceptance Tested</th>
+                </thead>
+                {% for primer in primers %}
+                    <tr>
+                        <td>{{ primer.alias }}</td>
+                        <td><div class="form-group"><input class="form-control input-sm" type="text" name="worklist" required="required"><input name="id" value="{{primer.id}}" type="hidden"></div></td>
+                        <td><div class="form-group"><input class="datepicker form-control input-sm" type="date" name="date_at" value="{{today}}"></div></td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <input type="submit" class="btn btn-success" value="Mark selected primers as acceptance tested"></input>
+            </div>
+        </div>
+    </div>
+
+</form>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="{{url_for('primer.bulk_reconstitute')}}" method="post">
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-tint"></span> Bulk Resconstitute Primers</h3>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped">
+                <thead>
+                    <th>Alias</th>
+                    <th>Date Reconstituted</th>
+                    <th>Concentration</th>
+                    <th>LTS Location</th>
+                </thead>
+                {% for primer in primers %}
+                    <tr>
+                        <td>{{ primer.alias }}<input name="id" value="{{primer.id}}" type="hidden"></td>
+                        <td><div class="form-group"><input class="datepicker form-control input-sm" type="date" name="date_reconstituted" value="{{today}}"></div></td>
+                        <td><div class="form-group"><input class="form-control input-sm" type="text" required="required" name="conc"></div></td>
+                        <td><div class="form-group" id="locations_{{primer.id}}"><select class="form-control input-sm" name="box" id="{{primer.id}}">
+                            <option disabled selected value></option>
+                            {% for box in boxes %}
+                                <option value="{{box}}">{{box}}</option>
+                            {% endfor %}
+
+                        </select></div></td>
+
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <input type="submit" class="btn btn-success" value="Mark selected primers as reconstituted">
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    $(document).ready(function() {
+
+
+
+        $('select').on('change', function () {
+            document.getElementById("locations_"+$(this).attr('id')).classList.remove('has-error');
+            HandleDropdowns($(this));
+        });
+
+        function HandleDropdowns(element) {
+            var $element = element;
+            var value = $element.val();
+
+            $.each($('select').not($element), function () { //loop all remaining select elements
+                var subValue = $(this).val();
+                if (subValue === value) { // if value is same reset
+                    $(this).val('');
+                    console.log($(this).attr('id'));
+                    console.log("locations_"+$(this).attr('id'));
+                    console.log(document.getElementById("locations_"+$(this).attr('id')))
+                    document.getElementById("locations_"+$(this).attr('id')).classList.add('has-error');
+                    console.log('resetting ' + $(this).attr('id')); // demo purpose
+                }
+
+            });
+        }
+    });
+</script>
+
+{% endblock %}

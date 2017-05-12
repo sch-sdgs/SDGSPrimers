@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row top-buffer">
+    <div class="col-md-12">
+        <h1>Search</h1>
+    </div>
+</div>
+{% if message %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning"><strong>{{ modifier }}</strong> {{ message }}</div>
+    </div>
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-md-12">
+        <form action="{{  url_for('summary.search') }}" method="post" class="form" role="search">
+            <div class="form-group">
+                <input type="text" name="staff" class="form-control" placeholder="Staff Name">
+            </div>
+            <button type="submit" class="btn btn-default" onclick="loading()">Search</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

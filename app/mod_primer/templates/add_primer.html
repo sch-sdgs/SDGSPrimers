@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="well bs-component">
+            <form action="{{url_for('primer.add_primer')}}" method="post" class="form-horizontal">
+                <fieldset>
+
+                    <legend>Add Primer</legend>
+
+                    <div class="form-group">
+                        {{ form.alias.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.alias(required="required",class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.sequence.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+
+                            <div class="input-group">
+                                <span class="input-group-addon">5'</span>
+                                {{ form.sequence(class_="form-control",required="required") }}
+                                <span class="input-group-addon">3'</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        {{ form.application.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.application(class_="form-control") }}
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        {{ form.m13.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            <div class="radio-inline">
+                                {{ form.m13 }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        {{ form.orientation.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            <div class="radio">
+
+                                {{ form.orientation }}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.mod_5.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.mod_5(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.mod_3.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.mod_3(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.scale.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.scale(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.purification.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.purification(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.service.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.service(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.dt.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.dt(class='datepicker form-control') }}
+                        </div>
+                        {{ form.hidden_tag() }}
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+    {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <div class="row">
+                <div class="col-md-10">
+                    <h3><span class="glyphicon glyphicon-th-large"></span> All Sets</h3></div>
+                <div class="col-md-2 text-right">
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-default btn-sm disabled">With Selected...</a>
+                        <a href="#" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                           aria-expanded="false"><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="action9" name="add_set_to_cart"><span
+                                    class="glyphicon glyphicon-shopping-cart"></span> Add all primers in set to cart</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+
+            <table id="primers" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Number of Primers in Set</th>
+                    <th>User</th>
+                </tr>
+                </thead>
+                {% for i in sets %}
+                <tr>
+                    <td>{{ i[0].id }}</a></td>
+                    <td><a href="detail/{{ i[0]['id'] }}">{{ i[0].name }}</a></td>
+                    <td>{{ i[1] }}</a></td>
+                    <td>{{ i[0].user_rel.username }}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

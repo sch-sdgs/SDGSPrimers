@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% if logged_in == False %}
+<div class="jumbotron">
+
+    <h2><span class="glyphicon glyphicon-resize-small"></span> Welcome to Primer Management!</h2>
+    <p>A web app for primer workflow management</p>
+    <!--<p><a href="" class="btn btn-default btn-lg">-->
+    <!--<span class="glyphicon glyphicon-pencil"></span> Create Your 1st Panel-->
+    <!--</a></p>-->
+    Need to register? email your windows login name to <a
+        href="mailto:matthew.parker@sch.nhs.uk?Subject=Primer%20Registration" target="_top">bioinformatics</a>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-dashboard"></span> Primer Service Status</h3></div>
+    </div>
+</div>
+</div>
+
+<div class="row ">
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Designed Primers
+            </div>
+            <div class="panel-body">
+                <h1>{{ designed }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Unchecked Primers
+            </div>
+            <div class="panel-body">
+                <h1>{{ unchecked }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Awaiting Ordering
+            </div>
+            <div class="panel-body">
+                <h1>{{ ordering }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                On Order
+            </div>
+            <div class="panel-body">
+                <h1>{{ on_order }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Reconstitution
+            </div>
+            <div class="panel-body">
+                <h1>{{ reconstitution }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Acceptance Testing
+            </div>
+            <div class="panel-body">
+                <h1>{{ at }}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if logged_in == True %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-resize-small"></span> Your Primers</h3></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Your Saved Carts
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                    <th>Cart Name</th>
+                    <th>Date Created</th>
+                    </thead>
+                    {% if carts %}
+                    {% for cart in carts %}
+                    <tr>
+                        <td><a href="{{ url_for('primer.view_saved_cart',ids=cart.ids|join(','),name=cart.name) }}">{{ cart.name }}</td>
+                        <td>{{ cart.date }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

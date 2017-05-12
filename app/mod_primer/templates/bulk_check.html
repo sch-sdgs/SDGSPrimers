@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="{{url_for('primer.bulk_check')}}" method="post">
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-check"></span> Bulk Check Primers</h3>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped">
+                <thead>
+                    <th>Alias</th>
+                    <th>Sequence</th>
+                    <th>Designed By</th>
+                    <th>Accept Primer</th>
+                </thead>
+                {% for primer in primers %}
+                    <tr>
+                        <td>{{ primer.alias }}</td>
+                        <td>{{ primer.sequence }}</td>
+                        <td>{{ primer.user_designed_rel.username }}</td>
+                        <td><input type="checkbox" value="{{ primer.id }}" name="{{ primer.id }}"></td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <input type="submit" class="btn btn-success" value="Mark selected primers as checked"></input>
+            </div>
+        </div>
+    </div>
+
+</form>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="well bs-component">
+            <form action="{{url_for('set.add_members')}}?ids={{ ','.join(ids) }}" method="post" class="form-horizontal">
+                <fieldset>
+
+                    <legend>Choose Set</legend>
+
+                    <div class="form-group">
+                        {{ form.set.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.set(class_="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+{% endblock %}

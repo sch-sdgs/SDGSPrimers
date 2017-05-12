@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+
+            <table class="table table-striped" id="primers">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                </tr>
+                </thead>
+                {% for i in freezers %}
+                <tr>
+                    <td>{{ i.id }}</a></td>
+                    <td><a href="detail/{{ i['id'] }}">{{ i.name }}</a></td>
+                    <td>{{ i.location }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

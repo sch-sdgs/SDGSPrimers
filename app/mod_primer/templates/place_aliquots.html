@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="{{url_for('primer.place_aliquot')}}" method="post">
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <h3><span class="glyphicon glyphicon-fullscreen"></span> Place Aliqouted Primers</h3>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped">
+                <thead>
+                    <th>Aliquot id</th>
+                    <th>Location</th>
+                </thead>
+                {% for aliquot in aliquots %}
+                    <tr>
+                        <td>{{ aliquot.id }}<input name="id" value="{{aliquot.id}}" type="hidden"></td>
+                        <td>
+                            <div class="form-group" id="locations_{{aliquot.id}}">
+                            <select class="form-control input-sm" name="box" id="{{aliquot.id}}">
+                                <option disabled selected value></option>
+                            {% for box in boxes %}
+                                <option value="{{box}}">{{box}}</option>
+                            {% endfor %}
+
+                        </select>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <a href="" class="btn btn-danger">Cancel & Remove Aliquots</a>
+            <input type="submit" class="btn btn-success" value="Place Aliquots in Storage">
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    $(document).ready(function() {
+
+
+
+        $('select').on('change', function () {
+            document.getElementById("locations_"+$(this).attr('id')).classList.remove('has-error');
+            HandleDropdowns($(this));
+        });
+
+        function HandleDropdowns(element) {
+            var $element = element;
+            var value = $element.val();
+
+            $.each($('select').not($element), function () { //loop all remaining select elements
+                var subValue = $(this).val();
+                if (subValue === value) { // if value is same reset
+                    $(this).val('');
+                    console.log($(this).attr('id'));
+                    console.log("locations_"+$(this).attr('id'));
+                    console.log(document.getElementById("locations_"+$(this).attr('id')))
+                    document.getElementById("locations_"+$(this).attr('id')).classList.add('has-error');
+                    console.log('resetting ' + $(this).attr('id')); // demo purpose
+                }
+
+            });
+        }
+    });
+</script>
+{% endblock %}

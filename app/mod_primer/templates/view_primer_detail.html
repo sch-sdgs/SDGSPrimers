@@ -1,0 +1,238 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-md-12">
+        {% if primer.current != 0 %}
+        <h1><strong><span class="glyphicon glyphicon-resize-small"></span> {{ primer.alias }} </strong></h1>
+        {% else %}
+        <h1><strong><span class="glyphicon glyphicon-remove"></span> {{ primer.alias }}</strong></h1>
+        (This primer has been re-ordered)
+        {% endif %}
+
+        {% if primer.historial_alias %}
+         <h5>(née {{ primer.historial_alias }})</h5>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        {% if primer.current != 0 %}
+        <div class="well bs-component">
+            {% else %}
+            <div class="archived well bs-component">
+        {% endif %}
+
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-2">
+                    <center>5' Mod</center>
+                </div>
+                <div class="col-md-8">
+                    <center>Sequence</center>
+                </div>
+                <div class="col-md-2">
+                    <center>3' Mod</center>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="sequence">{{ primer.mod_5 }}</div>
+                </div>
+                <div class="col-md-8">
+                    <div class="sequence">{{ primer.sequence }}</div>
+                </div>
+                <div class="col-md-2">
+                    <div class="sequence">{{ primer.mod_3 }}</div>
+                </div>
+
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>GC Content</th>
+                    <th>MT (GC)</th>
+                    <th>MT (Wallace)</th>
+                    <th>MT (NN)</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>{{ gc }} %</td>
+                    <td>{{ mt_gc }} &#x2103;</td>
+                    <td>{{ mt_wallace }} &#x2103;</td>
+                    <td>{{ mt_nn }} &#x2103;</td>
+                </tr>
+                <tr>
+                    <td colspan="4">* Values in this table are purely based on sequence and do not account for
+                        any modifications
+                    </td>
+                </tr>
+            </table>
+
+                {% if primer.box_rel %}
+                <h4> <span class="glyphicon glyphicon-briefcase"></span> LTS location: <a href="{{ url_for('box.view_box_detail',box_id=primer.box_rel.id)}}"> {{ primer.box_rel.name
+                                }}</a> row: {{ primer.row }} column: {{ primer.column }}</h4>
+                {% endif %}
+            <table class="table table-striped">
+                <tr>
+                    <td>Designed</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_designed)|safe }}
+                        {% if primer.date_designed %}
+                        <strong>designed on:</strong> {{ primer.date_designed }}
+                        <strong>by:</strong> {{ primer.user_designed_rel.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Checked</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_checked)|safe }}
+                        {% if primer.date_checked %}
+                        <strong>checked on:</strong> {{ primer.date_checked }}
+                        <strong>by:</strong> {{ primer.user_checked_rel.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ordered</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_ordered)|safe }}
+                        {% if primer.date_ordered %}
+                        <strong>ordered on:</strong> {{ primer.date_ordered }}
+                        <strong>by:</strong> {{ primer.user_ordered_rel.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Received</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_received)|safe }}
+                        {% if primer.date_received %}
+                        <strong>received on:</strong> {{ primer.date_received }}
+                        <strong>by:</strong> {{ primer.user_received_rel.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Reconstitued</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_reconstituted)|safe }}
+                        {% if primer.date_reconstituted %}
+                        <strong>reconstituted on:</strong> {{ primer.date_reconstituted }}
+                        <strong>by:</strong> {{ primer.user_reconstituted_rel.username }}
+                        {% endif %}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>Acceptance Tested</td>
+                    <td>
+                        {{ get_glyphicon(primer.date_acceptance)|safe }}
+                        {% if primer.date_acceptance %}
+                        <strong>acceptence tested on:</strong> {{ primer.date_acceptance }}
+                        <strong>by:</strong> {{ primer.user_acceptance_rel.username }}
+                        <strong>worklist:</strong> {{ primer.worklist }}
+                        {% endif %}
+
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+</div>
+{% if aliquots %}
+    <div class="row">
+                <div class="col-md-12">
+                    <h4><span class="glyphicon glyphicon-tint"></span> Aliquots</h4>
+                </div>
+            </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Aliquot ID</th>
+                        <th>Date Aliquoted</th>
+                        <th>Aliquoted By</th>
+                        <th>Aliquot Location</th>
+                        <th>Select</th>
+                        </thead>
+                        {% for a in aliquots %}
+                        <tr>
+                            <td>{{ a.id }}</a></td>
+                            <td>{{ a.date_aliquoted }}</td>
+                            <td>{{ a.user_aliquoted_rel.username }}</td>
+                            {% if a.box_rel %}
+                            <td><a href="{{ url_for('box.view_box_detail',box_id=a.box_rel.id)}}">{{ a.box_rel.name }}</a> | {{ a.row }} | {{ a.column }}</td>
+                            {% else %}
+                            <td>No Location</td>
+                            {% endif %}
+                            <td><input type="checkbox" class=""></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if archive %}
+    <div class="row">
+                <div class="col-md-12">
+                    <h4><span class="glyphicon glyphicon-folder-open"></span> Archive</h4>
+                </div>
+            </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <thead>
+                        <th>View Archive</th>
+                        <th>Date Ordered</th>
+                        <th>Ordered By</th>
+                        </thead>
+                        {% for a in archive %}
+                        <tr>
+                            <td><a href="{{a.id}}">{{ a.alias }}</a></td>
+                            <td>{{ a.date_ordered }}</td>
+                            <td>{{ a.user_ordered_rel.username }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+ {% if primer.current != 0 %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <button type="submit" class="btn btn-default">Re-Design Primer</button>
+            <a href="{{ url_for('primer.reorder_primer',primer_id=primer.id)}}" class="btn btn-success">Re-Order
+                Primer</a>
+            <button type="submit" class="btn btn-danger">Trash Primer</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

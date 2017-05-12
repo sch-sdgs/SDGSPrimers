@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <div class="row">
+                <div class="col-md-10">
+                    <h3><span class="glyphicon glyphicon-shopping-cart"></span> Order Primers</h3></div>
+                <div class="col-md-2 text-right">
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-default btn-sm disabled">With Selected...</a>
+                        <a href="#" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                           aria-expanded="false"><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="action5" name="order">Order</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            {% if message %}
+            <div class="alert alert-{{ modifier }}">{{ message }}</div>
+            {% endif %}
+
+            <table class="table table-striped" id="primers">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Alias</th>
+                    <th>User Ordered</th>
+                    <th>Reason</th>
+                    <th>Sequence</th>
+                    <th>5' Modification</th>
+                    <th>3' Modification</th>
+                    <th>Scale</th>
+                    <th>Purification</th>
+                    <th>Format</th>
+                </tr>
+                </thead>
+                {% for i in primers %}
+                <tr>
+                    <td>{{ i.id }}</td>
+                    <td><a href="detail/{{i.id}}">{{ i.alias }}</a></td>
+                    <td>{{ i.user_designed_rel.username}}</td>
+                    <td>{{ i.application_rel.name}}</td>
+                    <td>{{ i.sequence }}</td>
+                    <td>{{ i.mod_5 }}</td>
+                    <td>{{ i.mod_3 }}</td>
+                    <td>{{ i.scale }}</td>
+                    <td>{{ i.purification }}</td>
+                    <td>{{ i.service }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
