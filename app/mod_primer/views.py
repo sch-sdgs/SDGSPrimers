@@ -5,7 +5,7 @@ from app.views import admin_required
 from producers.StarLims import StarLimsApi
 from producers.eqaAPI import EqaAPI
 from forms import Primer, Receive, Search
-from app.models import Primers, Users, Boxes, Aliquots, Applications, SavedCarts
+from app.models import Primers, Users, Boxes, Aliquots, Applications, SavedCarts, Pairs
 from app.primers import s
 from sqlalchemy.orm import noload
 from Bio.SeqUtils import MeltingTemp as mt
@@ -17,7 +17,7 @@ import itertools
 from app.mod_box.views import box_layout_calculator
 import csv
 primer = Blueprint('primer', __name__, template_folder='templates')
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, or_
 import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
@@ -40,6 +40,16 @@ def utility_processor():
             return '<span class="label label-default"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i> NO</span>'
     return dict(get_glyphicon=get_glyphicon)
 
+
+@primer.context_processor
+def utility_processor():
+    def convert_orient(value):
+        if value == 0:
+            return 'F'
+        if value == 1:
+            return 'R'
+    return dict(convert_orient=convert_orient)
+
 @primer.route('/view', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -56,6 +66,8 @@ def view_primer_detail(primer_id,message=None,modifier=None):
     primer = Primers.query.filter_by(id=primer_id).first()
     #primer = Primers.query.join(Users).filter_by(id=primer_id).first()
 
+    pairs = Pairs.query.filter(or_(Pairs.forward==primer_id,Pairs.reverse==primer_id)).first()
+    print pairs
     seq = Seq(primer.sequence)
     gc = '%0.2f' % GC(seq)
     mt_wallace = '%0.2f' % mt.Tm_Wallace(seq)
@@ -64,7 +76,7 @@ def view_primer_detail(primer_id,message=None,modifier=None):
 
     archive = s.query(Primers).filter_by(alias=primer.alias).filter_by(current=0).filter(Primers.id != primer_id).all()
     aliquots = s.query(Aliquots).filter_by(primer_id=primer_id).all()
-    return render_template('view_primer_detail.html',archive=archive,aliquots=aliquots,primer=primer,message=message,modifier=modifier,mt_wallace=mt_wallace,mt_gc=mt_gc,mt_nn=mt_nn,gc=gc)
+    return render_template('view_primer_detail.html',pairs=pairs,archive=archive,aliquots=aliquots,primer=primer,message=message,modifier=modifier,mt_wallace=mt_wallace,mt_gc=mt_gc,mt_nn=mt_nn,gc=gc)
 
 
 @primer.route('/add', methods=['GET', 'POST'])
@@ -103,6 +115,7 @@ def add_primer():
     else:
         applications = [(row.id, row.name) for row in Applications.query.all()]
         form.application.choices = applications
+        form.orientation.default = 'F'
         return render_template('add_primer.html',form=form)
 
 

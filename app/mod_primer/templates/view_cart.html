@@ -52,7 +52,7 @@
                     <td><h5>{{ get_glyphicon(i[0].date_received)|safe }}</h5></td>
                     <td><h5>{{ get_glyphicon(i[0].date_reconstituted)|safe }}</h5></td>
                     <td><h5>{{ get_glyphicon(i[0].date_acceptance)|safe }}</h5></td>
-                    {% if i.box_rel %}
+                    {% if i[0].box_rel %}
                     <td>
                         <h6>
                             <a href="{{ url_for('box.view_box_detail',box_id=i[0].box_rel.id)}}">{{ i[0].box_rel.name

@@ -278,5 +278,30 @@ class SavedCarts(db.Model):
                 result[attr] = value
         return result
 
+class Pairs(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    forward = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False)
+    reverse = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False)
+
+
+    forward_rel = db.relationship("Primers", lazy='joined', foreign_keys=[forward])
+    reverse_rel = db.relationship("Primers", lazy='joined', foreign_keys=[reverse])
+
+
+    def __init__(self, forward=None, reverse=None):
+        self.forward = forward
+        self.reverse = reverse
+
+    def __repr__(self):
+        return '<Pairs %r>' % (self.id)
+
+    def to_dict(self):
+        result = {}
+        for attr, value in self.__dict__.iteritems():
+            print attr
+            if attr != '_sa_instance_state':
+                result[attr] = value
+        return result
+
 if enable_search:
     whooshalchemy.whoosh_index(app, Primers)
