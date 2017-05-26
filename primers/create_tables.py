@@ -30,6 +30,11 @@ def create_db(conn):
             """)
 
         pp.executescript("""
+                    INSERT into applications
+                        (name,paired) VALUES ("Sanger Sequencing",1),("Pyro Sequecning",0);
+                    """)
+
+        pp.executescript("""
             CREATE TABLE status
                 (id INTEGER PRIMARY KEY, status varchar(20));
             """)
@@ -99,7 +104,7 @@ def create_db(conn):
 
         pp.executescript("""
             CREATE TABLE pairs
-                (id INTEGER PRIMARY KEY, forward INTEGER, reverse INTEGER, FOREIGN KEY(forward) REFERENCES primers(id),  FOREIGN KEY(reverse) REFERENCES primers(id));
+                (id INTEGER PRIMARY KEY, forward INTEGER UNIQUE , reverse INTEGER UNIQUE, FOREIGN KEY(forward) REFERENCES primers(id),  FOREIGN KEY(reverse) REFERENCES primers(id));
             """)
 
         pp.executescript("""
@@ -121,6 +126,12 @@ def create_db(conn):
             CREATE TABLE conditions
                 (id INTEGER PRIMARY KEY, pair_id INTEGER, FOREIGN KEY(pair_id) REFERENCES pairs(id));
             """)
+
+        pp.executescript("""
+            CREATE TABLE comments
+                (id INTEGER PRIMARY KEY, primer_id INTEGER, pair_id INTEGER, user_id INTEGER, comment VARCHAR(1000),date VARCHAR(20), FOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(primer_id) REFERENCES primers(id), FOREIGN KEY(pair_id) REFERENCES pairs(id));
+            """)
+
 
         pp.executescript("commit")
         return True

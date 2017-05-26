@@ -2,11 +2,13 @@ from app.primers import db
 from app.main import app
 
 import sys
+
 if sys.version_info >= (3, 0):
     enable_search = False
 else:
     enable_search = True
     import flask_whooshalchemy as whooshalchemy
+
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,6 +60,7 @@ class Applications(db.Model):
                 result[attr] = value
         return result
 
+
 class Boxes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=False)
@@ -91,7 +94,7 @@ class Boxes(db.Model):
 
 class Primers(db.Model):
     __tablename__ = 'primers'
-    __searchable__ = ['alias','id']
+    __searchable__ = ['alias', 'id']
 
     id = db.Column(db.Integer, primary_key=True)
     alias = db.Column(db.String(20), unique=False)
@@ -115,7 +118,6 @@ class Primers(db.Model):
     lot_no = db.Column(db.String(30), unique=False)
     date_received = db.Column(db.String(20), unique=False)
     user_received = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # box_id = db.ForeignKey('boxes.id')
     box_id = db.Column(db.Integer, db.ForeignKey('boxes.id'), nullable=False)
     row = db.Column(db.Integer, unique=False)
     column = db.Column(db.Integer, unique=False)
@@ -140,8 +142,10 @@ class Primers(db.Model):
     user_acceptance_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_acceptance])
     application_rel = db.relationship("Applications", lazy='joined', foreign_keys=[application])
 
-    def __init__(self, alias=None, sequence=None, chrom=None, position=None, gene=None, orientation=None, scale=None, date=None, date_designed=None, user_designed=None,
-                 purification=None, service=None, mod_5=None, mod_3=None, current=None, pair_id=None, status=None, box_id=None, application=None, historial_alias=None, user_checked=None, date_checked=None):
+    def __init__(self, alias=None, sequence=None, chrom=None, position=None, gene=None, orientation=None, scale=None,
+                 date=None, date_designed=None, user_designed=None,
+                 purification=None, service=None, mod_5=None, mod_3=None, current=None, pair_id=None, status=None,
+                 box_id=None, application=None, historial_alias=None, user_checked=None, date_checked=None):
         self.alias = alias
         self.sequence = sequence
         self.chrom = chrom
@@ -172,6 +176,7 @@ class Primers(db.Model):
 
     def __repr__(self):
         return '<alias %r>' % (self.alias)
+
 
 class Aliquots(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -205,6 +210,7 @@ class Aliquots(db.Model):
                 result[attr] = value
         return result
 
+
 class Sets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=False)
@@ -230,6 +236,7 @@ class Sets(db.Model):
                 result[attr] = value
         return result
 
+
 class SetMembers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     set_id = db.Column(db.Integer, db.ForeignKey('sets.id'), nullable=False)
@@ -239,7 +246,6 @@ class SetMembers(db.Model):
     set_rel = db.relationship("Sets", lazy='joined', foreign_keys=[set_id])
     primer_rel = db.relationship("Primers", lazy='joined', foreign_keys=[primer_id])
     user_rel = db.relationship("Users", lazy='joined', foreign_keys=[user])
-
 
     def __init__(self, set_id=None, primer_id=None, user=None):
         self.set_id = set_id
@@ -257,6 +263,7 @@ class SetMembers(db.Model):
                 result[attr] = value
         return result
 
+
 class SavedCarts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=False)
@@ -264,9 +271,7 @@ class SavedCarts(db.Model):
     ids = db.Column(db.PickleType, unique=False)
     user = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-
     user_rel = db.relationship("Users", lazy='joined', foreign_keys=[user])
-
 
     def __init__(self, name=None, date=None, ids=None, user=None):
         self.name = name
@@ -285,15 +290,14 @@ class SavedCarts(db.Model):
                 result[attr] = value
         return result
 
+
 class Pairs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    forward = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False)
-    reverse = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False)
-
+    forward = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False, unique=True)
+    reverse = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=False, unique=True)
 
     forward_rel = db.relationship("Primers", lazy='joined', foreign_keys=[forward])
     reverse_rel = db.relationship("Primers", lazy='joined', foreign_keys=[reverse])
-
 
     def __init__(self, forward=None, reverse=None):
         self.forward = forward
@@ -309,6 +313,38 @@ class Pairs(db.Model):
             if attr != '_sa_instance_state':
                 result[attr] = value
         return result
+
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    primer_id = db.Column(db.Integer, db.ForeignKey('primers.id'), nullable=True)
+    pair_id = db.Column(db.Integer, db.ForeignKey('pairs.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    comment = db.Column(db.String(1000), unique=False)
+    date = db.Column(db.String(20), unique=False)
+
+    user_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    primer_rel = db.relationship("Primers", lazy='joined', foreign_keys=[primer_id])
+    pair_rel = db.relationship("Pairs", lazy='joined', foreign_keys=[pair_id])
+
+    def __init__(self, primer_id=None, pair_id=None, comment=None, date=None,user_id=None):
+        self.primer_id = primer_id
+        self.pair_id = pair_id
+        self.comment = comment
+        self.date = date
+        self.user_id = user_id
+
+    def __repr__(self):
+        return '<Comments %r>' % (self.id)
+
+    def to_dict(self):
+        result = {}
+        for attr, value in self.__dict__.iteritems():
+            print attr
+            if attr != '_sa_instance_state':
+                result[attr] = value
+        return result
+
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Primers)

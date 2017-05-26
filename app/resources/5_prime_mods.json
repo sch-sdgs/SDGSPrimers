@@ -1,0 +1,462 @@
+{
+  "No Modification": [
+    {
+      "label": "None",
+      "value": "None"
+    }
+  ],
+  "Fluorescent": [
+    {
+      "label": "6-FAM (fluorescein)",
+      "value": "[6FAM]"
+    },
+    {
+      "label": "Cyanine 3",
+      "value": "[Cyanine3]"
+    },
+    {
+      "label": "Cyanine 5",
+      "value": "[Cyanine5]"
+    },
+    {
+      "label": "HEX",
+      "value": "[HEX]"
+    },
+    {
+      "label": "JOE ",
+      "value": "[JOE]"
+    },
+    {
+      "label": "ROX ",
+      "value": "[ROX]"
+    },
+    {
+      "label": "TAMRA",
+      "value": "[TAM]"
+    },
+    {
+      "label": "TET ",
+      "value": "[TET]"
+    },
+    {
+      "label": "Texas Red- X",
+      "value": "[TxRd]"
+    },
+    {
+      "label": "5-FAM",
+      "value": "[5FAM]"
+    },
+    {
+      "label": "Alexa Fluor 488",
+      "value": "[A488]"
+    },
+    {
+      "label": "Alexa Fluor 546",
+      "value": "[A546]"
+    },
+    {
+      "label": "Alexa Fluor 647",
+      "value": "[A647]"
+    },
+    {
+      "label": "ATTO 488",
+      "value": "[Atto488]"
+    },
+    {
+      "label": "ATTO 532",
+      "value": "[Atto532]"
+    },
+    {
+      "label": "ATTO 550",
+      "value": "[Atto550]"
+    },
+    {
+      "label": "ATTO 565",
+      "value": "[Atto565]"
+    },
+    {
+      "label": "ATTO 647N",
+      "value": "[Atto647N]"
+    },
+    {
+      "label": "ATTO 680",
+      "value": "[Atto680]"
+    },
+    {
+      "label": "Cyanine 5.5",
+      "value": "[Cyanine55]"
+    },
+    {
+      "label": "Fluorescein",
+      "value": "[Flc]"
+    }
+  ],
+  "Attachment": [
+    {
+      "label": "Amino-Modifier C12",
+      "value": "[AmC12]"
+    },
+    {
+      "label": "Amino-Modifier C3",
+      "value": "[AmC3]"
+    },
+    {
+      "label": "Amino-Modifier C6",
+      "value": "[AmC6]"
+    },
+    {
+      "label": "Phosphate",
+      "value": "[Phos]"
+    },
+    {
+      "label": "Thiol-Modifier C6 S-S",
+      "value": "[ThiC6]"
+    }
+  ],
+  "Binding": [
+    {
+      "label": "Biotin",
+      "value": "[Btn]"
+    },
+    {
+      "label": "Biotin TEG",
+      "value": "[BtnTg]"
+    },
+    {
+      "label": "Digoxigenin",
+      "value": "[DIG]"
+    }
+  ],
+  "Spacer": [
+    {
+      "label": "Spacer 18",
+      "value": "[SP18]"
+    },
+    {
+      "label": "Spacer 9",
+      "value": "[Sp9]"
+    },
+    {
+      "label": "Spacer C3",
+      "value": "[SpcC3]"
+    }
+  ],
+  "Analog": [
+    {
+      "label": "2,6-Diaminopurine",
+      "value": "[26AP]"
+    },
+    {
+      "label": "2-Aminopurine",
+      "value": "[2AMP]"
+    },
+    {
+      "label": "5-Br-dC",
+      "value": "[5BrdC]"
+    },
+    {
+      "label": "5-Br-dU",
+      "value": "[5BrdU]"
+    },
+    {
+      "label": "5-Me-dC",
+      "value": "[5MedC]"
+    },
+    {
+      "label": "5-Nitroindole",
+      "value": "[5NITI]"
+    },
+    {
+      "label": "8-Br-dA",
+      "value": "[8BrdA]"
+    },
+    {
+      "label": "8-Br-dG",
+      "value": "[8BrdG]"
+    },
+    {
+      "label": "8-oxo-dA",
+      "value": "[OXOA]"
+    },
+    {
+      "label": "8-oxo-dG",
+      "value": "[OXOG]"
+    },
+    {
+      "label": "dA-5' (5' to 3' synthesis)",
+      "value": "[dA5F]"
+    },
+    {
+      "label": "dC-5' (5' to 3' synthesis)",
+      "value": "[dC5F]"
+    },
+    {
+      "label": "dG-5' (5' to 3' synthesis)",
+      "value": "[dG5F]"
+    },
+    {
+      "label": "dT-5' (5' to 3' synthesis)",
+      "value": "[dT5F]"
+    },
+    {
+      "label": "Inosine",
+      "value": "I"
+    },
+    {
+      "label": "Thymidine Glycol",
+      "value": "[TG]"
+    },
+    {
+      "label": "Uracil",
+      "value": "U"
+    }
+  ],
+  "Antisense": [
+    {
+      "label": "2'-OMe-RNA A",
+      "value": "[mA]"
+    },
+    {
+      "label": "2'-OMe-RNA C",
+      "value": "[mC]"
+    },
+    {
+      "label": "2'-OMe-RNA G",
+      "value": "[mG]"
+    },
+    {
+      "label": "2'-OMe-RNA U",
+      "value": "[mU]"
+    },
+    {
+      "label": "Cholesteryl TEG",
+      "value": "[CholTEG]"
+    },
+    {
+      "label": "Thiophosphate",
+      "value": "[THI]"
+    }
+  ],
+  "All": [
+    {
+      "label": "6-FAM (fluorescein)",
+      "value": "[6FAM]"
+    },
+    {
+      "label": "Cyanine 3",
+      "value": "[Cyanine3]"
+    },
+    {
+      "label": "Cyanine 5",
+      "value": "[Cyanine5]"
+    },
+    {
+      "label": "HEX",
+      "value": "[HEX]"
+    },
+    {
+      "label": "JOE ",
+      "value": "[JOE]"
+    },
+    {
+      "label": "ROX ",
+      "value": "[ROX]"
+    },
+    {
+      "label": "TAMRA",
+      "value": "[TAM]"
+    },
+    {
+      "label": "TET ",
+      "value": "[TET]"
+    },
+    {
+      "label": "Texas Red- X",
+      "value": "[TxRd]"
+    },
+    {
+      "label": "2'-OMe-RNA A",
+      "value": "[mA]"
+    },
+    {
+      "label": "2'-OMe-RNA C",
+      "value": "[mC]"
+    },
+    {
+      "label": "2'-OMe-RNA G",
+      "value": "[mG]"
+    },
+    {
+      "label": "2'-OMe-RNA U",
+      "value": "[mU]"
+    },
+    {
+      "label": "2,6-Diaminopurine",
+      "value": "[26AP]"
+    },
+    {
+      "label": "2-Aminopurine",
+      "value": "[2AMP]"
+    },
+    {
+      "label": "5-Br-dC",
+      "value": "[5BrdC]"
+    },
+    {
+      "label": "5-Br-dU",
+      "value": "[5BrdU]"
+    },
+    {
+      "label": "5-FAM",
+      "value": "[5FAM]"
+    },
+    {
+      "label": "5-Me-dC",
+      "value": "[5MedC]"
+    },
+    {
+      "label": "5-Nitroindole",
+      "value": "[5NITI]"
+    },
+    {
+      "label": "8-Br-dA",
+      "value": "[8BrdA]"
+    },
+    {
+      "label": "8-Br-dG",
+      "value": "[8BrdG]"
+    },
+    {
+      "label": "8-oxo-dA",
+      "value": "[OXOA]"
+    },
+    {
+      "label": "8-oxo-dG",
+      "value": "[OXOG]"
+    },
+    {
+      "label": "Alexa Fluor 488",
+      "value": "[A488]"
+    },
+    {
+      "label": "Alexa Fluor 546",
+      "value": "[A546]"
+    },
+    {
+      "label": "Alexa Fluor 647",
+      "value": "[A647]"
+    },
+    {
+      "label": "Amino-Modifier C12",
+      "value": "[AmC12]"
+    },
+    {
+      "label": "Amino-Modifier C3",
+      "value": "[AmC3]"
+    },
+    {
+      "label": "Amino-Modifier C6",
+      "value": "[AmC6]"
+    },
+    {
+      "label": "ATTO 488",
+      "value": "[Atto488]"
+    },
+    {
+      "label": "ATTO 532",
+      "value": "[Atto532]"
+    },
+    {
+      "label": "ATTO 550",
+      "value": "[Atto550]"
+    },
+    {
+      "label": "ATTO 565",
+      "value": "[Atto565]"
+    },
+    {
+      "label": "ATTO 647N",
+      "value": "[Atto647N]"
+    },
+    {
+      "label": "ATTO 680",
+      "value": "[Atto680]"
+    },
+    {
+      "label": "Biotin",
+      "value": "[Btn]"
+    },
+    {
+      "label": "Biotin TEG",
+      "value": "[BtnTg]"
+    },
+    {
+      "label": "Cholesteryl TEG",
+      "value": "[CholTEG]"
+    },
+    {
+      "label": "Cyanine 5.5",
+      "value": "[Cyanine55]"
+    },
+    {
+      "label": "dA-5' (5' to 3' synthesis)",
+      "value": "[dA5F]"
+    },
+    {
+      "label": "dC-5' (5' to 3' synthesis)",
+      "value": "[dC5F]"
+    },
+    {
+      "label": "dG-5' (5' to 3' synthesis)",
+      "value": "[dG5F]"
+    },
+    {
+      "label": "Digoxigenin",
+      "value": "[DIG]"
+    },
+    {
+      "label": "dT-5' (5' to 3' synthesis)",
+      "value": "[dT5F]"
+    },
+    {
+      "label": "Fluorescein",
+      "value": "[Flc]"
+    },
+    {
+      "label": "Inosine",
+      "value": "I"
+    },
+    {
+      "label": "Phosphate",
+      "value": "[Phos]"
+    },
+    {
+      "label": "Spacer 18",
+      "value": "[SP18]"
+    },
+    {
+      "label": "Spacer 9",
+      "value": "[Sp9]"
+    },
+    {
+      "label": "Spacer C3",
+      "value": "[SpcC3]"
+    },
+    {
+      "label": "Thiol-Modifier C6 S-S",
+      "value": "[ThiC6]"
+    },
+    {
+      "label": "Thiophosphate",
+      "value": "[THI]"
+    },
+    {
+      "label": "Thymidine Glycol",
+      "value": "[TG]"
+    },
+    {
+      "label": "Uracil",
+      "value": "U"
+    }
+  ]
+}

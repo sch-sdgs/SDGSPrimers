@@ -1,14 +1,108 @@
+# -*- coding: utf-8 -*-
 from wtforms.fields.html5 import DateField
 from app.queries import *
 from flask_wtf import Form
 from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField
-from wtforms.validators import Required
+from wtforms.validators import Required,InputRequired
 import datetime
+import json
+import os
+import pprint
+from cgi import escape
+from wtforms.widgets import Select,HTMLString, html_params
+
+
+__all__ = ('ExtendedSelectField', 'ExtendedSelectWidget')
+
+
+class ExtendedSelectWidget(Select):
+    """
+    Add support of choices with ``optgroup`` to the ``Select`` widget.
+    """
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        if self.multiple:
+            kwargs['multiple'] = True
+        html = ['<select %s>' % html_params(name=field.name, **kwargs)]
+        for item1, item2 in field.choices:
+            if isinstance(item2, (list,tuple)):
+                group_label = item1
+                group_items = item2
+                html.append('<optgroup %s>' % html_params(label=group_label))
+                for inner_val, inner_label in group_items:
+                    html.append(self.render_option(inner_val, inner_label, inner_val == field.data))
+                html.append('</optgroup>')
+            else:
+                val = item1
+                label = item2
+                html.append(self.render_option(val, label, val == field.data))
+        html.append('</select>')
+        return HTMLString(''.join(html))
+
+
+class ExtendedSelectField(SelectField):
+    """
+    Add support of ``optgroup`` grouping to default WTForms' ``SelectField`` class.
+    Here is an example of how the data is laid out.
+        (
+            ('Fruits', (
+                ('apple', 'Apple'),
+                ('peach', 'Peach'),
+                ('pear', 'Pear')
+            )),
+            ('Vegetables', (
+                ('cucumber', 'Cucumber'),
+                ('potato', 'Potato'),
+                ('tomato', 'Tomato'),
+            )),
+            ('other','None Of The Above')
+        )
+    It's a little strange that the tuples are (value, label) except for groups which are (Group Label, list of tuples)
+    but this is actually how Django does it too https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
+    """
+    widget = ExtendedSelectWidget()
+
+    def pre_validate(self, form):
+        """
+        Don't forget to validate also values from embedded lists.
+        """
+        for item1,item2 in self.choices:
+            if isinstance(item2, (list, tuple)):
+                group_label = item1
+                group_items = item2
+                for val,label in group_items:
+                    if val == self.data:
+                        return
+            else:
+                val = item1
+                label = item2
+                if val == self.data:
+                    return
+        raise ValueError(self.gettext('Not a valid choice!'))
+
+
+def convert_json_to_choices(json_file):
+
+    with open(json_file) as json_data:
+        all_data = json.load(json_data)
+
+    result = []
+    for i in all_data:
+        choices = tuple()
+        for choice in all_data[i]:
+            choices = ((choice["value"],choice["label"]),)+choices
+            group = (i,(choices))
+        result.append(group)
+
+    final = tuple(result)
+    return final
 
 
 class Primer(Form):
     alias = TextField("Primer Alias",validators=[Required()])
-    sequence = TextField("Sequence")
+    sequence = TextField("Sequence",validators=[InputRequired()])
+    chromosome = SelectField("Chromosome")
+    position = TextField("Position")
 
     application = SelectField('Application')
 
@@ -19,19 +113,23 @@ class Primer(Form):
     dt = DateField('Date Designed',
                    format='%Y-%m-%d', default=datetime.date.today)
     purification = SelectField(label='Purification',
-                               choices=[("Standard Desalting", "Standard Desalting"), ("PAGE Purification", "PAGE"),
-                                        ("HPLC Purification", "HPLC"), ("IE HPLC Purification", "IE HPLC"),
-                                        ("Dual HPLC Purification", "Dual HPLC"),
-                                        ("RNase-Free HPLC Purification", "RNase-Free HPLC")])
-    mod_5 = SelectField(label="5' Modification",
-                        choices=[("None", "None"), ("/5HEX/", "/5HEX/")])
-    mod_3 = SelectField(label="3' Modification",
-                        choices=[("None", "None")])
+                               choices=[("DESALT", "Desalt"), ("RP1", "Cartridge"),
+                                        ("HPLC", "HPLC"), ("PAGE", "PAGE")])
+
+    mod_5_choices = convert_json_to_choices(os.path.dirname(os.path.dirname(__file__))+"/resources/5_prime_mods.json")
+
+    mod_5 = ExtendedSelectField(label="5' Modification",choices=mod_5_choices)
+
+    mod_3_choices = convert_json_to_choices(os.path.dirname(os.path.dirname(__file__)) + "/resources/3_prime_mods.json")
+    mod_3 = ExtendedSelectField(label="3' Modification",
+                        choices=mod_3_choices)
 
     scale = SelectField(label="Scale",
-                        choices=[("None", "None"), ("25nmole DNA Oligo", "25nmole DNA Oligo"),
-                                 ("100nmole DNA Oligo", "100nmole DNA Oligo"),
-                                 ("250nmole DNA Oligo", "250nmole DNA Oligo")])
+                        choices=[("0.0250 UMO","0.025 "+u"μ"+"mole"),
+                                 ("0.0500 UMO","0.05 "+u"μ"+"mole"),
+                                 ("1.0000 UMO","1 "+u"μ"+"mole"),
+                                 ("10.0000 UMO","10 "+u"μ"+"mole"),
+                                 ("15.0000 UMO", "15 "+u"μ"+"mole")])
 
     service = SelectField(label="Service",
                           choices=[("None", "None"), ("LabReady", "LabReady"),
@@ -64,4 +162,9 @@ class Search(Form):
 class BulkPrimer(Form):
     data = TextAreaField("Paste Primers")
     submit = SubmitField("Process Primers")
+
+class Comment(Form):
+    comment = TextAreaField("Comment")
+    object_id = HiddenField()
+    submit = SubmitField("Add Comment")
 

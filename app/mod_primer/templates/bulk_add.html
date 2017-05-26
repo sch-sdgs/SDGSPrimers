@@ -2,18 +2,17 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="well bs-component">
             <form action="{{url_for('primer.bulk_add')}}" method="post" class="form-horizontal">
                 <fieldset>
                     <legend>Bulk Add Primers</legend>
-
+                    <strong>How To Use:</strong> Paste columns C to Q from your Excel primer design template here!<br /><br />
 
                     <div class="form-group">
                         {{ form.data.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.data(class_="form-control") }}
+                            {{ form.data(class_="form-control", rows="15") }}
                         </div>
                     </div>
 

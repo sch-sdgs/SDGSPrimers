@@ -36,7 +36,7 @@
                         <center>5' Mod</center>
                     </div>
                     <div class="col-md-8">
-                        <center>Sequence</center>
+                        <center>Sequence (<a href="https://genome.ucsc.edu/cgi-bin/hgBlat?userSeq={{ primer.sequence }}&type=DNA">blat</a>)</center>
                     </div>
                     <div class="col-md-2">
                         <center>3' Mod</center>
@@ -50,13 +50,17 @@
                         <div class="sequence">{{ primer.mod_5 }}</div>
                     </div>
                     <div class="col-md-8">
-                        <div class="sequence">{{ primer.sequence }}</div>
+                        <div class="sequence">{{ primer.sequence }}<br>
+                        </div>
                     </div>
                     <div class="col-md-2">
                         <div class="sequence">{{ primer.mod_3 }}</div>
                     </div>
 
                 </div>
+
+
+
 
                 <table class="table table-striped">
                     <thead>
@@ -162,7 +166,7 @@
             <h4><span class="glyphicon glyphicon-link"></span> Pair: {{ primer_pair.alias }} </h4>
         </div>
     </div>
-     <div class="row">
+    <div class="row">
         <div class="col-md-12">
             <div class="well bs-component">
                 <div class="row">
@@ -193,7 +197,7 @@
 
             </div>
         </div>
-     </div>
+    </div>
 
     {% endif %}
 
@@ -279,7 +283,8 @@
 
 
                         {% if not pairs %}
-                        <a href="{{ url_for('primer.add_primer',pair_id=primer.id)}}" class="btn btn-info">Complete Pair</a>
+                        <a href="{{ url_for('primer.add_primer',pair_id=primer.id)}}" class="btn btn-info">Complete
+                            Pair</a>
                         {% endif %}
                     </div>
                     <div class="col-md-9 text-right">
@@ -293,4 +298,8 @@
         </div>
     </div>
     {% endif %}
-    {% endblock %}
+
+    {% include "comments.html" %}
+</div>
+
+{% endblock %}

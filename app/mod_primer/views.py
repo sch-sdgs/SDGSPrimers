@@ -2,8 +2,8 @@ from flask import Blueprint
 from flask import render_template, request, url_for, redirect, send_file, session
 from flask.ext.login import login_required, current_user
 from app.views import admin_required
-from forms import Primer, Receive, Search, BulkPrimer
-from app.models import Primers, Users, Boxes, Aliquots, Applications, SavedCarts, Pairs
+from forms import Primer, Receive, Search, BulkPrimer, Comment
+from app.models import Primers, Users, Boxes, Aliquots, Applications, SavedCarts, Pairs, Comments
 from app.primers import s
 from sqlalchemy.orm import noload
 from Bio.SeqUtils import MeltingTemp as mt
@@ -52,6 +52,11 @@ def utility_processor():
     return dict(convert_orient=convert_orient)
 
 
+def get_comments(primer_id=None, pair_id=None):
+    comments = s.query(Comments).filter_by(primer_id=primer_id).filter_by(pair_id=None).all()
+    return comments
+
+
 @primer.route('/view', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -61,16 +66,16 @@ def view_primers(message=None, modifier=None, ids=None):
         Primers).all()
     return render_template('view_primers.html', primers=primers, message=message, modifier=modifier)
 
+
 @primer.route('/view/pairs', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def view_pairs(message=None, modifier=None, ids=None):
-
-
-    #pairs= s.query(Primers).with_entities(Primers.id,Primers.alias,Primers.sequence,Primers.box_id,Primers.row,Primers.column,Primers.pair_id).group_by(Primers.pair_id).all()
+    # pairs= s.query(Primers).with_entities(Primers.id,Primers.alias,Primers.sequence,Primers.box_id,Primers.row,Primers.column,Primers.pair_id).group_by(Primers.pair_id).all()
     pairs = s.query(Pairs).all()
 
     return render_template('view_pairs.html', pairs=pairs, message=message, modifier=modifier)
+
 
 @primer.route('/detail/<int:primer_id>', methods=['GET', 'POST'])
 @login_required
@@ -98,9 +103,14 @@ def view_primer_detail(primer_id, message=None, modifier=None):
 
     archive = s.query(Primers).filter_by(alias=primer.alias).filter_by(current=0).filter(Primers.id != primer_id).all()
     aliquots = s.query(Aliquots).filter_by(primer_id=primer_id).all()
+
+    comment_form = Comment()
+    comment_form.object_id.data = primer_id
+    comments = get_comments(primer_id=primer_id)
+
     return render_template('view_primer_detail.html', primer_pair=primer_pair, pairs=pairs, archive=archive,
                            aliquots=aliquots, primer=primer, message=message, modifier=modifier, mt_wallace=mt_wallace,
-                           mt_gc=mt_gc, mt_nn=mt_nn, gc=gc)
+                           mt_gc=mt_gc, mt_nn=mt_nn, gc=gc, comments=comments, comment_form=comment_form)
 
 
 @primer.route('/add', methods=['GET', 'POST'])
@@ -165,8 +175,6 @@ def add_primer():
         applications = [(row.id, row.name) for row in Applications.query.all()]
         form.application.choices = applications
 
-
-
         return render_template('add_primer.html', form=form)
 
 
@@ -176,17 +184,17 @@ def add_primer():
 def bulk_add():
     if request.method == 'POST':
 
-
         print request.form["data"]
         data = request.form["data"].rstrip().split("\n")
         primers = []
         for d in data:
             if d is not None:
-                disease, name, empty0, sequence, empty1, empty2, empty3, empty4, comment, user, empty5, chrom, start, end, alias = d.split("\t")
+                disease, name, empty0, sequence, empty1, empty2, empty3, empty4, comment, user, empty5, chrom, start, end, alias = d.split(
+                    "\t")
 
                 p = Primers()
 
-                p.alias = alias
+                p.alias = alias.rstrip().strip()
                 p.chrom = chrom
                 p.position = start
                 p.sequence = sequence.replace(" ", "")
@@ -200,15 +208,12 @@ def bulk_add():
 
         primers_info = s.query(Primers).filter(Primers.id.in_(primers))
 
-
         return render_template('bulk_process.html', primers_info=primers_info)
 
 
     else:
         form = BulkPrimer()
         return render_template('bulk_add.html', form=form)
-
-
 
 
 @primer.route('/bulk_process', methods=['GET', 'POST'])
@@ -221,10 +226,10 @@ def bulk_process():
 
     for id, pair, orient in itertools.izip(ids, pairs, orients):
 
-        update = {"orientation":int(orient)}
+        update = {"orientation": int(orient)}
         s.query(Primers).filter_by(id=int(id)).update(update)
 
-        #deal with pairs then update everything else
+        # deal with pairs then update everything else
         pids = [int(id), int(pair)]
         count = s.query(Pairs).filter(Pairs.forward.in_(pids)).filter(Pairs.reverse.in_(pids)).count()
         if count == 0:
@@ -236,20 +241,14 @@ def bulk_process():
                 p.reverse = int(pair)
                 p.forward = int(id)
 
-
-
             s.add(p)
             s.commit()
 
             pair_id = p.id
-            update = {"pair_id":pair_id}
+            update = {"pair_id": pair_id}
             s.query(Primers).filter_by(id=int(id)).update(update)
             s.query(Primers).filter_by(id=int(pair)).update(update)
             s.commit()
-
-
-
-
 
 
 @primer.route('/receive', methods=['GET', 'POST'])
@@ -709,17 +708,46 @@ def print_pick_list(ids=None):
     return render_template('pick_list_print.html', user=current_user.id, date=time.strftime("%Y-%m-%d"),
                            time=time.strftime("%H:%M"), primers=primers, location=location)
 
+
 @primer.route('/mark_as_pair', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def mark_as_pair():
     if 'ids' in request.args:
         ids = request.args['ids'].split(",")
-        if len(ids) < 3:
-            if len(ids) > 1:
-                print ids
-                #todo make this make the primers a pair
+        if len(ids) < 3 and len(ids) > 1:
+            print ids
+            # todo make this make the primers a pair
+
+            # 1st find out which is F and which is R
+
+            primer = s.query(Primers).filter(Primers.id == ids[0]).first()
+            p = Pairs()
+            if primer.orientation == 0:
+                p.forward = int(ids[0])
+                p.reverse = int(ids[1])
+            else:
+                p.reverse = int(ids[0])
+                p.forward = int(ids[1])
+
+            s.add(p)
+
+            try:
+                s.commit()
+                pair_id = p.id
+                update = {"pair_id": pair_id}
+                for id in ids:
+                    s.query(Primers).filter_by(id=int(id)).update(update)
+                    s.commit()
                 return view_primers(message="Primers Marked as Pair", modifier="success")
+            except:
+                s.rollback()
+                return view_primers(message="<strong>Warning!</strong> Are the primers already part of a pair?",
+                                    modifier="danger")
+
+        else:
+            return view_primers(message="<strong>Warning!</strong> You need to select 2 primers to make a pair!",
+                                modifier="danger")
 
 
 @primer.route('/audit', methods=['GET', 'POST'])
@@ -734,3 +762,18 @@ def audit():
     random.shuffle(ids)
 
     return print_pick_list(ids=ids[0:20])
+
+
+@primer.route('/add_comment', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_comment():
+    c = Comments()
+    c.comment = request.form["comment"]
+    c.primer_id = int(request.form["object_id"])
+    c.date = time.strftime("%Y-%m-%d %H:%M")
+    c.user_id = get_user_by_username(s, current_user.id)
+    s.add(c)
+    s.commit()
+
+    return redirect(request.referrer)
