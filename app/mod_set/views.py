@@ -76,8 +76,11 @@ def add_members(message=None,modifier=None):
     else:
         ids = request.args['ids'].split(",")
         sets = [(row.id, row.name) for row in Sets.query.filter_by(current=1).all()]
-        form.set.choices = sets
-        return render_template('choose_set.html', form=form, ids=ids)
+        if len(sets)>0:
+            form.set.choices = sets
+            return render_template('choose_set.html', form=form, ids=ids)
+        else:
+            return redirect(url_for('set.add_set'))
 
 
 
