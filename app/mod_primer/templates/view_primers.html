@@ -5,9 +5,12 @@
     <div class="col-md-12">
         <div class="well bs-component">
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <h3><span class="glyphicon glyphicon-resize-small"></span> All Primers</h3></div>
-                    <div class="col-md-2 text-right">
+                    <div class="col-md-1 text-right">
+                        <a href="{{url_for('primer.view_pairs')}}" class="btn btn-info btn-sm">View As Pairs</a>
+                    </div>
+                     <div class="col-md-2 text-right">
                         {% include "with_selected.html" %}
                     </div>
                 </div>

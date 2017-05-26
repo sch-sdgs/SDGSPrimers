@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <form action="{{url_for('primer.bulk_process')}}" method="post" class="form-horizontal">
+                <fieldset>
+                    <legend>Bulk Process Primers</legend>
+                    <table class="table">
+                        <thead>
+                        <th>Alias</th>
+                        <th>Pair</th>
+                        <th>Orientation</th>
+                        <th>5' Mod</th>
+                        <th>3' Mod</th>
+                        <th>Scale</th>
+                        <th>Purification</th>
+                        <th>Service</th>
+                        </thead>
+                        {% for primer in primers_info %}
+                        <tr>
+                            <td>
+                                <h6>{{ primer.alias }}</h6>
+                                <input type="hidden" value="{{ primer.id }}" id="id" name="id">
+                            </td>
+                            <td>
+                                <select id="pair" name="pair" class="form-control">
+                                    {% for primer_select in primers_info %}
+                                    {% if primer_select.id != primer.id %}
+                                    <option value="{{primer_select.id}}">{{primer_select.alias}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                {% if "_R" in primer.alias %}
+                                    {% set selectedr = 'selected' %}
+                                {% endif %}
+                                <select class="form-control" id="orientation" name="orientation">
+                                    <option value="0">F</option>
+                                    <option value="1" {{selectedr}}>R</option>
+                                </select>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="form-group">
+                        <div class="col-lg-12">
+                            <input class="btn btn-primary" id="submit" name="submit" type="submit"
+                                   value="Update Primers">
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

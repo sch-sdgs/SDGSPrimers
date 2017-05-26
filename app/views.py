@@ -3,8 +3,6 @@ from flask_login import login_required, login_user, logout_user, LoginManager, U
     current_user
 from app.activedirectory import UserAuthentication
 from functools import wraps
-from producers.StarLims import StarLimsApi
-from producers.eqaAPI import EqaAPI
 from queries import get_user_by_username
 from mod_admin.queries import check_if_admin
 from app.primers import s, app

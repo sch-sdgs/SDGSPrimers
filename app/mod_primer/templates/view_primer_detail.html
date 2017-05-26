@@ -154,6 +154,49 @@
             </div>
         </div>
     </div>
+
+    {% if pairs %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4><span class="glyphicon glyphicon-link"></span> Pair: {{ primer_pair.alias }} </h4>
+        </div>
+    </div>
+     <div class="row">
+        <div class="col-md-12">
+            <div class="well bs-component">
+                <div class="row">
+                    <div class="col-md-2">
+                        <center>5' Mod</center>
+                    </div>
+                    <div class="col-md-8">
+                        <center>Sequence</center>
+                    </div>
+                    <div class="col-md-2">
+                        <center>3' Mod</center>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="sequence">{{ primer_pair.mod_5 }}</div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="sequence">{{ primer_pair.sequence }}</div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="sequence">{{ primer_pair.mod_3 }}</div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+     </div>
+
+    {% endif %}
+
     {% if aliquots %}
     <div class="row">
         <div class="col-md-12">
@@ -236,7 +279,7 @@
 
 
                         {% if not pairs %}
-                        <button type="submit" class="btn btn-info">Complete Pair</button>
+                        <a href="{{ url_for('primer.add_primer',pair_id=primer.id)}}" class="btn btn-info">Complete Pair</a>
                         {% endif %}
                     </div>
                     <div class="col-md-9 text-right">

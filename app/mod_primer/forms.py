@@ -1,7 +1,7 @@
 from wtforms.fields.html5 import DateField
 from app.queries import *
 from flask_wtf import Form
-from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField
+from wtforms.fields import TextField, SubmitField, HiddenField, PasswordField, RadioField, BooleanField, SelectField, TextAreaField
 from wtforms.validators import Required
 import datetime
 
@@ -41,6 +41,8 @@ class Primer(Form):
                                    ("Fluorometric Scan (ABS/EM)", "Fluorometric Scan (ABS/EM)"),
                                    ("Na+Salt Exchange", "Na+Salt Exchange")])
 
+    pair_id = HiddenField()
+
     submit = SubmitField("Add Primer & Send For Checking")
 
 
@@ -58,3 +60,8 @@ class Receive(Form):
 class Search(Form):
     term = TextField("Search")
     submit = SubmitField("Search")
+
+class BulkPrimer(Form):
+    data = TextAreaField("Paste Primers")
+    submit = SubmitField("Process Primers")
+

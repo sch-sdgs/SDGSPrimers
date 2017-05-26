@@ -34,40 +34,88 @@
         "iDisplayLength": 50,
                 select: true});
 
+        var pair_table = $('#pairs').DataTable({ "columnDefs": [
+            {
+                "targets": [ 0,4 ],
+                "visible": false,
+                "searchable": false
+            }],
+        "iDisplayLength": 50,
+                select: true});
 
 
-        $("#action , #action2, #action3,#action4,#action5,#action6,#action7,#action8,#action9,#action10").click(function() {
+
+        $("#action ,#action2, #action3,#action4,#action5,#action6,#action7,#action8,#action9,#action10,#action11").click(function() {
             var func = $(this).attr("name")
             var ids = []
             var data = table.rows({selected: true}).data()
             var arrayLength = data.length;
             for (var i = 0; i < arrayLength; i++) {
-                    ids.push(data[i][0])
+                ids.push(data[i][0])
             }
-            if ( func == "bulk_check") {
+            if (func == "bulk_check") {
                 console.log("bulk_check")
-                window.location.assign("{{url_for('primer.bulk_check')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.bulk_check')}}?ids=" + ids.join(','))
             }
-            if ( func == "bulk_receive") {
+            if (func == "bulk_receive") {
                 console.log("bulk_receive")
-                window.location.assign("{{url_for('primer.bulk_receive')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.bulk_receive')}}?ids=" + ids.join(','))
             }
-            if ( func == "bulk_reconstitute") {
+            if (func == "bulk_reconstitute") {
                 console.log("bulk_reconstitute")
-                window.location.assign("{{url_for('primer.bulk_reconstitute')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.bulk_reconstitute')}}?ids=" + ids.join(','))
             }
-            if ( func == "bulk_at") {
+            if (func == "bulk_at") {
                 console.log("bulk_at")
-                window.location.assign("{{url_for('primer.bulk_at')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.bulk_at')}}?ids=" + ids.join(','))
             }
-            if ( func == "bulk_aliquot") {
+            if (func == "bulk_aliquot") {
                 console.log("bulk_aliquot")
-                window.location.assign("{{url_for('primer.bulk_aliquot')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.bulk_aliquot')}}?ids=" + ids.join(','))
             }
-            if ( func == "order") {
+            if (func == "order") {
                 console.log("order")
-                window.location.assign("{{url_for('primer.order')}}?ids="+ ids.join(','))
+                window.location.assign("{{url_for('primer.order')}}?ids=" + ids.join(','))
             }
+            if (func == "add_to_cart") {
+                console.log("add_to_cart")
+                window.location.assign("{{url_for('primer.cart')}}?ids=" + ids.join(','))
+            }
+            if (func == "remove_from_cart") {
+                console.log("remove_from_cart")
+                window.location.assign("{{url_for('primer.remove_from_cart')}}?ids=" + ids.join(','))
+            }
+            if (func == "add_to_set") {
+                console.log("add_to_set")
+                window.location.assign("{{url_for('set.add_members')}}?ids=" + ids.join(','))
+            }
+            if (func == "add_set_to_cart") {
+                console.log("add_set_to_cart")
+                window.location.assign("{{url_for('set.add_set_to_cart')}}?ids=" + ids.join(','))
+            }
+            if (func == "print_pick_list") {
+                console.log("print_pick_list")
+                window.location.assign("{{url_for('primer.print_pick_list')}}?ids=" + ids.join(','))
+            }
+            if (func == "mark_as_pair") {
+                console.log("mark_as_pair")
+                window.location.assign("{{url_for('primer.mark_as_pair')}}?ids=" + ids.join(','))
+            }
+        });
+
+
+
+        $("#pair1,#pair2, #pair3,#pair4").click(function() {
+            var func = $(this).attr("name")
+            var ids = []
+            var data = pair_table.rows({selected: true}).data()
+            var arrayLength = data.length;
+            console.log(data);
+            for (var i = 0; i < arrayLength; i++) {
+                    ids.push(data[i][0])
+                    ids.push(data[i][4])
+            }
+
             if ( func == "add_to_cart") {
                 console.log("add_to_cart")
                 window.location.assign("{{url_for('primer.cart')}}?ids="+ ids.join(','))
@@ -80,10 +128,6 @@
                 console.log("add_to_set")
                 window.location.assign("{{url_for('set.add_members')}}?ids="+ ids.join(','))
             }
-            if ( func == "add_set_to_cart") {
-                console.log("add_set_to_cart")
-                window.location.assign("{{url_for('set.add_set_to_cart')}}?ids="+ ids.join(','))
-            }
              if ( func == "print_pick_list") {
                 console.log("print_pick_list")
                 window.location.assign("{{url_for('primer.print_pick_list')}}?ids="+ ids.join(','))
@@ -91,8 +135,8 @@
         });
 
 
+    });
 
-    } );
 
 
     // ]]></script>
@@ -166,6 +210,7 @@
                        aria-expanded="false">Primers <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="/primer/add">Add Primer</a></li>
+                        <li><a href="/primer/bulk_add">Bulk Add Primers</a></li>
                         <li><a href="/primer/order">Order Primers</a></li>
                         <li><a href="/primer/view">View Primers</a></li>
                         <li role="separator" class="divider"></li>

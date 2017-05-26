@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="well bs-component">
+            <form action="{{url_for('primer.bulk_add')}}" method="post" class="form-horizontal">
+                <fieldset>
+                    <legend>Bulk Add Primers</legend>
+
+
+                    <div class="form-group">
+                        {{ form.data.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.data(class_="form-control") }}
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            {{ form.submit(class_="btn btn-primary") }}
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

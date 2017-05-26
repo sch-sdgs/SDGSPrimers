@@ -6,11 +6,12 @@ import inspect
 import itertools
 from functools import wraps
 from flask_login import current_user
+import app.config as config
 
 #define app and db session
 
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object(config)
 app.secret_key = 'development key'
 db = SQLAlchemy(app)
 s = db.session

@@ -96,6 +96,9 @@ class Primers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     alias = db.Column(db.String(20), unique=False)
     sequence = db.Column(db.String(100), unique=True)
+    chrom = db.Column(db.String(20), unique=False)
+    position = db.Column(db.Integer, unique=False)
+    gene = db.Column(db.String(20), unique=False)
     orientation = db.Column(db.Integer, unique=False)
     pair_id = db.Column(db.Integer, unique=False)
     mod_5 = db.Column(db.String(20), unique=False)
@@ -137,10 +140,13 @@ class Primers(db.Model):
     user_acceptance_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_acceptance])
     application_rel = db.relationship("Applications", lazy='joined', foreign_keys=[application])
 
-    def __init__(self, alias=None, sequence=None, orientation=None, scale=None, date=None, date_designed=None, user_designed=None,
+    def __init__(self, alias=None, sequence=None, chrom=None, position=None, gene=None, orientation=None, scale=None, date=None, date_designed=None, user_designed=None,
                  purification=None, service=None, mod_5=None, mod_3=None, current=None, pair_id=None, status=None, box_id=None, application=None, historial_alias=None, user_checked=None, date_checked=None):
         self.alias = alias
         self.sequence = sequence
+        self.chrom = chrom
+        self.position = position
+        self.gene = gene
         self.orientation = orientation
         self.mod_5 = mod_5
         self.mod_3 = mod_3
@@ -155,6 +161,7 @@ class Primers(db.Model):
         self.historial_alias = historial_alias
         self.user_checked = user_checked
         self.date_checked = date_checked
+        self.pair_id = pair_id
 
     def to_dict(self):
         result = {}

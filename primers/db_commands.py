@@ -11,7 +11,7 @@ class Database():
         path = os.path.dirname(os.path.dirname(__file__))
         print(path)
         #self.primers = path + '/resources/primers.db'
-        self.primers = '/home/bioinfo/mparker/wc/SDGSPrimers/resources/primers.db'
+        self.primers = '/home/dnamdp/wc/SDGSPrimers/resources/primers.db'
         print self.primers
         self.primers_conn = sqlite3.connect(self.primers,check_same_thread=False)
 
