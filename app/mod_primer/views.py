@@ -201,18 +201,32 @@ def bulk_add():
                 p.date_designed = time.strftime("%Y-%m-%d")
                 p.user_designed = get_user_by_username(s, current_user.id)
                 p.current = 1
+                p.application = int(request.form["application"])
 
                 s.add(p)
                 s.commit()
                 primers.append(p.id)
 
         primers_info = s.query(Primers).filter(Primers.id.in_(primers))
+        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/5_prime_mods.json") as json_data:
+            mod_5 = json.load(json_data)
 
-        return render_template('bulk_process.html', primers_info=primers_info)
+        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/3_prime_mods.json") as json_data:
+            mod_3 = json.load(json_data)
+
+        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/scales.json") as json_data:
+            scales = json.load(json_data)
+
+        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/purifications.json") as json_data:
+            purifications = json.load(json_data)
+
+        return render_template('bulk_process.html', purifications=purifications, scales=scales, mod_5=mod_5, mod_3=mod_3, primers_info=primers_info)
 
 
     else:
         form = BulkPrimer()
+        applications = [(row.id, row.name) for row in Applications.query.all()]
+        form.application.choices = applications
         return render_template('bulk_add.html', form=form)
 
 
@@ -319,6 +333,10 @@ def reorder_primer(primer_id):
         pair_update = {"reverse": p.id}
 
     s.query(Pairs).filter_by(id=dict_data["pair_id"]).update(pair_update)
+    s.commit()
+
+    comments_update = {"primer_id": p.id}
+    s.query(Comments).filter_by(primer_id=primer_id).update(comments_update)
     s.commit()
 
     return redirect(url_for('primer.view_primer_detail', primer_id=p.id))
@@ -476,8 +494,8 @@ def bulk_aliquot():
                         if column != 0 and row != 0 and box["box_layout"][row][column] == "Empty":
                             empty.append(i.name + "|" + str(row) + "|" + str(column))
 
-        return render_template('place_aliquots.html', aliquots=aliquots, boxes=empty)
-        # return view_primers(message="Primers Marked as Aliquoted",modifier="success")
+        primers = s.query(Primers).filter(Primers.id.in_(ids)).all()
+        return render_template('place_aliquots.html', primers=primers,aliquots=aliquots, boxes=empty)
     else:
         ids = request.args['ids'].split(",")
         primers = s.query(Primers).filter(Primers.id.in_(ids)).filter(Primers.user_acceptance != None).filter_by(
@@ -520,9 +538,11 @@ def order():
             line.append(p["mod_5"])
             line.append(p["sequence"])
             line.append(p["mod_3"])
-            line.append(p["scale"])
+            line.append(p["scale"].replace(" UMO",""))
             line.append(p["purification"])
-            line.append(p["service"])
+            line.append("Dry")
+            line.append("None")
+            line.append("1")
 
             output.append(line)
 
@@ -717,9 +737,6 @@ def mark_as_pair():
         ids = request.args['ids'].split(",")
         if len(ids) < 3 and len(ids) > 1:
             print ids
-            # todo make this make the primers a pair
-
-            # 1st find out which is F and which is R
 
             primer = s.query(Primers).filter(Primers.id == ids[0]).first()
             p = Pairs()
@@ -748,6 +765,16 @@ def mark_as_pair():
         else:
             return view_primers(message="<strong>Warning!</strong> You need to select 2 primers to make a pair!",
                                 modifier="danger")
+
+@primer.route('/break_pair', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def break_pair():
+    primer_id=request.args["primer_id"]
+    pair = s.query(Pairs).filter((Pairs.forward==primer_id)|(Pairs.reverse==primer_id)).first()
+    s.query(Pairs).filter_by(id=pair.id).delete()
+    s.query(Primers).filter_by(pair_id=pair.id).update({'pair_id':None})
+    s.commit()
 
 
 @primer.route('/audit', methods=['GET', 'POST'])

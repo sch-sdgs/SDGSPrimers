@@ -1,0 +1,22 @@
+[
+  {
+    "value":"0.0250 UMO",
+    "label":"0.025μmole - Not Available with Mods"
+  },
+  {
+    "value":"0.0500 UMO",
+    "label":"0.05μmole"
+  },
+  {
+    "value":"1.0000 UMO",
+    "label":"1μmole"
+  },
+  {
+    "value":"10.0000 UMO",
+    "label":"10μmole"
+  },
+  {
+    "value":"15.0000 UMO",
+    "label":"15μmole"
+  }
+]

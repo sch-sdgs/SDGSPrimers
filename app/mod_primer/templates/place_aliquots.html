@@ -15,11 +15,17 @@
             <table class="table table-striped">
                 <thead>
                     <th>Aliquot id</th>
+                    <th>Primer</th>
                     <th>Location</th>
                 </thead>
                 {% for aliquot in aliquots %}
                     <tr>
                         <td>{{ aliquot.id }}<input name="id" value="{{aliquot.id}}" type="hidden"></td>
+                        {% for primer in primers %}
+                            {% if aliquot.primer_id == primer.id %}
+                                <td>{{ primer.alias }}</td>
+                            {% endif %}
+                        {% endfor %}
                         <td>
                             <div class="form-group" id="locations_{{aliquot.id}}">
                             <select class="form-control input-sm" name="box" id="{{aliquot.id}}">

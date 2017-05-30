@@ -288,8 +288,12 @@
                         {% endif %}
                     </div>
                     <div class="col-md-9 text-right">
+                        {% if pairs %}
+                        <a href="{{ url_for('primer.break_pair',primer_id=primer.id)}}" class="btn btn-default">Un-Pair
+                            Primer</a>
+                        {% endif %}
                         <button type="submit" class="btn btn-default">Re-Design Primer</button>
-                        <a href="{{ url_for('primer.reorder_primer',primer_id=primer.id)}}" class="btn btn-success">Re-Order
+                        <a href="{{ url_for('primer.reorder_primer',primer_id=primer.id)}}" class="btn btn-default">Re-Order
                             Primer</a>
                         <button type="submit" class="btn btn-danger">Trash Primer</button>
                     </div>

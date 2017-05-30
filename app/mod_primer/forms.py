@@ -121,11 +121,12 @@ class Primer(Form):
     mod_5 = ExtendedSelectField(label="5' Modification",choices=mod_5_choices)
 
     mod_3_choices = convert_json_to_choices(os.path.dirname(os.path.dirname(__file__)) + "/resources/3_prime_mods.json")
+
     mod_3 = ExtendedSelectField(label="3' Modification",
                         choices=mod_3_choices)
 
     scale = SelectField(label="Scale",
-                        choices=[("0.0250 UMO","0.025 "+u"μ"+"mole"),
+                        choices=[("0.0250 UMO","0.025 "+u"μ"+"mole - This is unavailable for most modifications"),
                                  ("0.0500 UMO","0.05 "+u"μ"+"mole"),
                                  ("1.0000 UMO","1 "+u"μ"+"mole"),
                                  ("10.0000 UMO","10 "+u"μ"+"mole"),
@@ -161,10 +162,12 @@ class Search(Form):
 
 class BulkPrimer(Form):
     data = TextAreaField("Paste Primers")
+    application = SelectField("Application")
     submit = SubmitField("Process Primers")
 
 class Comment(Form):
     comment = TextAreaField("Comment")
     object_id = HiddenField()
     submit = SubmitField("Add Comment")
+
 

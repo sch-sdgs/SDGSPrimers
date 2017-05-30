@@ -16,7 +16,6 @@
                         <th>3' Mod</th>
                         <th>Scale</th>
                         <th>Purification</th>
-                        <th>Service</th>
                         </thead>
                         {% for primer in primers_info %}
                         <tr>
@@ -40,6 +39,58 @@
                                 <select class="form-control" id="orientation" name="orientation">
                                     <option value="0">F</option>
                                     <option value="1" {{selectedr}}>R</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <select class="form-control" id="5_mod" name="5_mod">
+                                    {% for i in mod_5 %}
+                                        <optgroup label="{{ i }}">
+                                            {% for j in mod_5[i] %}
+                                                <option value="{{ j['value'] }}"
+                                                {% if j['label'] == "None" %}
+                                                    selected
+                                                {% endif %}
+                                                >{{ j['label'] }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </td>
+
+                            <td>
+                                <select class="form-control" id="3_mod" name="3_mod">
+                                    {% for i in mod_3 %}
+                                        <optgroup label="{{ i }}">
+                                            {% for j in mod_3[i] %}
+                                                <option value="{{ j['value'] }}"
+                                                {% if j['label'] == "None" %}
+                                                    selected
+                                                {% endif %}
+                                                >{{ j['label'] }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </td>
+
+                            <td>
+                                <select class="form-control" id="scale" name="scale">
+                                    {% for i in scales %}
+                                        <option value="{{ i['value'] }}">{{ i['label'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+
+                             <td>
+                                <select class="form-control" id="purification" name="purification">
+                                    {% for i in purifications %}
+                                        <option value="{{ i['value'] }}"
+                                        {% if i['selected'] == "True" %}
+                                            selected
+                                        {% endif %}
+                                        >{{ i['label'] }}</option>
+                                    {% endfor %}
                                 </select>
                             </td>
 

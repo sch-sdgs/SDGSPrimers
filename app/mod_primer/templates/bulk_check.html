@@ -22,7 +22,7 @@
                 {% for primer in primers %}
                     <tr>
                         <td>{{ primer.alias }}</td>
-                        <td>{{ primer.sequence }}</td>
+                        <td>{{ primer.sequence }} <a href="https://genome.ucsc.edu/cgi-bin/hgBlat?userSeq={{ primer.sequence }}&type=DNA">blat</a></td>
                         <td>{{ primer.user_designed_rel.username }}</td>
                         <td><input type="checkbox" value="{{ primer.id }}" name="{{ primer.id }}"></td>
                     </tr>

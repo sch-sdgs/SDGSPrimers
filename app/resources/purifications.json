@@ -1,0 +1,22 @@
+[
+  {
+    "value":"DESALT",
+    "label":"Desalt",
+    "selected":"True"
+  },
+  {
+    "value":"RP1",
+    "label":"Cartridge",
+    "selected":"False"
+  },
+  {
+    "value":"HPLC",
+    "label":"HPLC",
+    "selected":"False"
+  },
+  {
+    "value":"PAGE",
+    "label":"PAGE",
+    "selected":"False"
+  }
+]
