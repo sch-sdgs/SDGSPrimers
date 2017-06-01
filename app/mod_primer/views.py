@@ -57,6 +57,7 @@ def get_comments(primer_id=None, pair_id=None):
     return comments
 
 
+
 @primer.route('/view', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -73,7 +74,8 @@ def view_primers(message=None, modifier=None, ids=None):
 def view_pairs(message=None, modifier=None, ids=None):
     # pairs= s.query(Primers).with_entities(Primers.id,Primers.alias,Primers.sequence,Primers.box_id,Primers.row,Primers.column,Primers.pair_id).group_by(Primers.pair_id).all()
     pairs = s.query(Pairs).all()
-
+    for i in pairs:
+        print i
     return render_template('view_pairs.html', pairs=pairs, message=message, modifier=modifier)
 
 
@@ -130,7 +132,7 @@ def add_primer():
 
         p = Primers()
         p.alias = request.form['alias']
-        p.sequence = sequence
+        p.sequence = sequence.upper()
         p.orientation = request.form['orientation']
         p.application = request.form['application']
         p.date_designed = request.form['dt']
@@ -263,6 +265,9 @@ def bulk_process():
             s.query(Primers).filter_by(id=int(id)).update(update)
             s.query(Primers).filter_by(id=int(pair)).update(update)
             s.commit()
+
+    return view_primers(message="Primers Added",modifier="success")
+
 
 
 @primer.route('/receive', methods=['GET', 'POST'])
@@ -513,13 +518,26 @@ def place_aliquot():
     if request.method == 'POST':
         ids = request.form.getlist("id")
         boxes = request.form.getlist("box")
-        for id, loc in itertools.izip(ids, boxes):
+        concentrations = request.form.getlist("concentration")
+        for id, concentration, loc in itertools.izip(ids, concentrations, boxes):
             box_name, row, column = loc.split("|")
             id_query = s.query(Boxes).filter_by(name=box_name).first()
-            s.query(Aliquots).filter_by(id=int(id)).update({"box_id": id_query.id, "row": row, "column": column})
+            s.query(Aliquots).filter_by(id=int(id)).update({"box_id": id_query.id, "row": row, "column": column, "concentration": concentration})
         s.commit()
         return view_primers(message="Aliquots Created and Stored!", modifier="success")
 
+@primer.route('/remove_aliquots', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def remove_aliquots():
+    if request.method == 'POST':
+        print request.form
+        for aliquot_id in request.form:
+            s.query(Aliquots).filter_by(id=aliquot_id).delete()
+        s.commit()
+
+
+        return view_primer_detail(primer_id=request.form["primer_id"],message="Success! Aliquots Deleted", modifier="warning")
 
 @primer.route('/order', methods=['GET', 'POST'])
 @login_required
@@ -538,7 +556,8 @@ def order():
             line.append(p["mod_5"])
             line.append(p["sequence"])
             line.append(p["mod_3"])
-            line.append(p["scale"].replace(" UMO",""))
+            #todo fix this - scale is none it fails
+            #line.append(p["scale"].replace(" UMO",""))
             line.append(p["purification"])
             line.append("Dry")
             line.append("None")
@@ -579,7 +598,7 @@ def search():
             search = int(raw[:-1])
             results = s.query(Primers).filter_by(id=search).all()
         if request.form["term"] != "":
-            search = request.form["term"]
+            search = "*"+request.form["term"]+"*"
             results = Primers.query.whoosh_search(search).filter_by(current=1).group_by(Primers).all()
 
         return render_template('search_primers.html', form=form, primers=results, request=request, term=search)

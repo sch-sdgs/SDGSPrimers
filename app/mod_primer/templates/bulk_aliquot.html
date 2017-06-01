@@ -17,14 +17,12 @@
                     <th>Alias</th>
                     <th>Number of Aliquots</th>
                     <th>Date Aliquoted</th>
-                    <th>Concentration</th>
                 </thead>
                 {% for primer in primers %}
                     <tr>
                         <td>{{ primer.alias }}<input name="id" value="{{primer.id}}" type="hidden"></td>
                         <td><div class="form-group"><input class="form-control input-sm" type="number" name="aliquots"></div></td>
                         <td><div class="form-group"><input class="datepicker form-control input-sm" type="date" name="date_aliquoted" value="{{today}}"></div></td>
-                        <td><div class="form-group"><input class="form-control input-sm" type="text" name="conc" required="required"></div></td>
                     </tr>
                 {% endfor %}
                 </table>

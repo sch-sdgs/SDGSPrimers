@@ -6,12 +6,19 @@
     <title>Primers</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
     <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery-ui.js" ></script>
     <script src="/static/js/datatables.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="/static/css/datatables.min.css">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/panel_pal.css">
     <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/smoothness/base-ui.css">-->
+
+    <!--<script src="http://code.jquery.com/jquery-1.12.4.js"></script>-->
+<!--<script src="http://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>-->
 
 
 
@@ -20,6 +27,7 @@
         $("#loading").show();
         $("#content").hide();
     }
+
 
 
     $(document).ready(function() {
@@ -135,6 +143,11 @@
         });
 
 
+
+
+
+
+
     });
 
 
@@ -170,10 +183,6 @@
                     <ul class="dropdown-menu">
                         <li><a href="/admin/user">User Admin</a></li>
                         <li><a href="/admin/application">Application Admin</a></li>
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="/virtualpanels/create">Create a Virtual Panel</a></li>-->
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="#">Export Virtual Panel</a></li>-->
                     </ul>
                 </li>
                 {% endif %}
@@ -184,10 +193,6 @@
                     <ul class="dropdown-menu">
                         <li><a href="/freezer/view">View Freezers</a></li>
                         <li><a href="/freezer/add">Add Freezer</a></li>
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="/virtualpanels/create">Create a Virtual Panel</a></li>-->
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="#">Export Virtual Panel</a></li>-->
                     </ul>
                 </li>
 
@@ -198,11 +203,7 @@
                         <li><a href="/box/view">View Boxes</a></li>
                         <li><a href="/box/add">Add Box</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="/primer/audit">Audit</a></li>
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="/virtualpanels/create">Create a Virtual Panel</a></li>-->
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="#">Export Virtual Panel</a></li>-->
+                        <li><a href="/primer/audit" target="_blank">Audit</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -216,9 +217,6 @@
                         <li role="separator" class="divider"></li>
                         <li><a href="/admin/user">Primer Label Printer</a></li>
                         <li><a href="/admin/user">Move Primer</a></li>
-                        <!--<li><a href="/virtualpanels/create">Create a Virtual Panel</a></li>-->
-                        <!--<li role="separator" class="divider"></li>-->
-                        <!--<li><a href="#">Export Virtual Panel</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -229,10 +227,6 @@
                         <li><a href="/set/view">View Sets</a></li>
                     </ul>
                 </li>
-                <!--<li>-->
-                    <!--<a href=""><span class="glyphicon glyphicon-barcode"></span></a>-->
-
-                <!--</li>-->
                 <li>
                     <a href="{{url_for('primer.view_cart')}}"><span class="glyphicon glyphicon-shopping-cart"></span> <span class="badge strong"> {{ cart_count }}</span></a>
 
@@ -252,7 +246,7 @@
 
 
                      <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="term"  placeholder="Search Primer Alias">
+                        <input type="text" class="form-control input-sm" name="term" required="true"  placeholder="Search Primer Alias">
                             <span class="input-group-btn"><button type="submit" class="btn btn-sm btn-success "><span class="glyphicon glyphicon-search"></span></button></span>
                       </div>
 

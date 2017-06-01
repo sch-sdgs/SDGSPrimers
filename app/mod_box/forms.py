@@ -14,7 +14,7 @@ class Box(Form):
     aliquots = RadioField("Aliquots Allowed?", choices=[(0, 'No'), (1, 'Yes')],default=0)
 
 class Fill(Form):
-    primer = SelectField('Primer')
+    primer = TextField('Primer')
 
     submit = SubmitField("Fill position with selected primer")
 

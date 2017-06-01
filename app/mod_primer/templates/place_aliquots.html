@@ -2,54 +2,62 @@
 
 {% block content %}
 <form action="{{url_for('primer.place_aliquot')}}" method="post">
-<div class="row">
-    <div class="col-md-12">
-        <div class="well bs-component">
-            <h3><span class="glyphicon glyphicon-fullscreen"></span> Place Aliqouted Primers</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well bs-component">
+                <h3><span class="glyphicon glyphicon-fullscreen"></span> Place Aliqouted Primers</h3>
             </div>
         </div>
     </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="well bs-component">
-            <table class="table table-striped">
-                <thead>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well bs-component">
+                <table class="table table-striped">
+                    <thead>
                     <th>Aliquot id</th>
                     <th>Primer</th>
+                    <th>Concentration</th>
                     <th>Location</th>
-                </thead>
-                {% for aliquot in aliquots %}
+                    </thead>
+                    {% for aliquot in aliquots %}
                     <tr>
                         <td>{{ aliquot.id }}<input name="id" value="{{aliquot.id}}" type="hidden"></td>
                         {% for primer in primers %}
-                            {% if aliquot.primer_id == primer.id %}
-                                <td>{{ primer.alias }}</td>
-                            {% endif %}
+                        {% if aliquot.primer_id == primer.id %}
+                        <td>{{ primer.alias }}</td>
+                        {% endif %}
                         {% endfor %}
                         <td>
+                            <div class="input-group">
+                                <input class="form-control input-sm" type="text" size="5"
+                                                            required="required" name="conc" value="100">
+                                <span class="input-group-addon">μM</span>
+                            </div>
+                        </td>
+                        <td>
                             <div class="form-group" id="locations_{{aliquot.id}}">
-                            <select class="form-control input-sm" name="box" id="{{aliquot.id}}">
-                                <option disabled selected value></option>
-                            {% for box in boxes %}
-                                <option value="{{box}}">{{box}}</option>
-                            {% endfor %}
+                                <select class="form-control input-sm" name="box" id="{{aliquot.id}}">
+                                    <option disabled selected value></option>
+                                    {% for box in boxes %}
+                                    <option value="{{box}}">{{box}}</option>
+                                    {% endfor %}
 
-                        </select>
+                                </select>
                             </div>
                         </td>
                     </tr>
-                {% endfor %}
+                    {% endfor %}
                 </table>
             </div>
 
         </div>
     </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="well bs-component">
-            <a href="" class="btn btn-danger">Cancel & Remove Aliquots</a>
-            <input type="submit" class="btn btn-success" value="Place Aliquots in Storage">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well bs-component">
+                <a href="" class="btn btn-danger">Cancel & Remove Aliquots</a>
+                <input type="submit" class="btn btn-success" value="Place Aliquots in Storage">
             </div>
         </div>
     </div>
@@ -57,12 +65,11 @@
 </form>
 
 <script>
-    $(document).ready(function() {
-
+    $(document).ready(function () {
 
 
         $('select').on('change', function () {
-            document.getElementById("locations_"+$(this).attr('id')).classList.remove('has-error');
+            document.getElementById("locations_" + $(this).attr('id')).classList.remove('has-error');
             HandleDropdowns($(this));
         });
 
@@ -75,9 +82,9 @@
                 if (subValue === value) { // if value is same reset
                     $(this).val('');
                     console.log($(this).attr('id'));
-                    console.log("locations_"+$(this).attr('id'));
-                    console.log(document.getElementById("locations_"+$(this).attr('id')))
-                    document.getElementById("locations_"+$(this).attr('id')).classList.add('has-error');
+                    console.log("locations_" + $(this).attr('id'));
+                    console.log(document.getElementById("locations_" + $(this).attr('id')))
+                    document.getElementById("locations_" + $(this).attr('id')).classList.add('has-error');
                     console.log('resetting ' + $(this).attr('id')); // demo purpose
                 }
 

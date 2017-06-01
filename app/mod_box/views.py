@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask import render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, jsonify
 from flask.ext.login import login_required, current_user
 from app.views import admin_required
 from forms import Box, Fill
@@ -117,6 +117,16 @@ def add_box():
 
         return render_template('add_box.html',form=form)
 
+@box.route('/autocomplete', methods=['GET'])
+@login_required
+@admin_required
+def autocomplete():
+    search = request.args.get('q')
+    query = s.query(Primers.alias).filter(Primers.alias.like('%' + str(search) + '%'))
+    results = [mv[0] for mv in query.all()]
+    print results
+    return jsonify(matching_results=results)
+
 
 @box.route('/fill/<int:box_id>/<int:row>/<int:column>', methods=['GET', 'POST'])
 @login_required
@@ -130,9 +140,9 @@ def fill_box(box_id,row,column):
         update['row'] = row
         update['column'] = column
         update['box_id'] = box_id
-        primer_id = request.form['primer']
+        alias = request.form['primer']
 
-        s.query(Primers).filter_by(id=primer_id).update(update)
+        s.query(Primers).filter_by(alias=alias).update(update)
         s.commit()
         return redirect(url_for('box.view_box_detail', box_id=box_id))
 

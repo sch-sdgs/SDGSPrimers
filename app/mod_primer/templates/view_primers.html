@@ -73,9 +73,11 @@
                     {% endif %}
                     <td>
                         <h6>
-                            {% for i in range(i[1]) %}
-                            <span class="glyphicon glyphicon-tint"></span>
-                            {% endfor %}
+                            {% if i[1] > 0 %}
+                            <span class="glyphicon glyphicon-tint"></span>x{{ i[1] }}
+                            {% else %}
+                            None
+                            {% endif %}
                         </h6>
                     </td>
                 </tr>

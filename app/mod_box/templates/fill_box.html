@@ -13,7 +13,7 @@
                     <div class="form-group">
                         {{ form.primer.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.primer(class_="form-control") }}
+                            {{ form.primer(class_="form-control ui-autocomplete-input") }}
                         </div>
                     </div>
 
@@ -29,5 +29,25 @@
     </div>
     <div class="col-md-2"></div>
 </div>
+<script>
+    $(function () {
+            var p = jQuery.noConflict();
+            p = $('#primer');
+            p.autocomplete({
+                source: function (request, response) {
+                    $.getJSON("{{url_for('box.autocomplete')}}", {
+                        q: request.term // in flask, "q" will be the argument to look for using request.args
+                    }, function (data) {
+                        response(data.matching_results); // matching_results from jsonify
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    console.log(ui.item.value); // not in your question, but might help later
+                }
+            });
+        })
+
+</script>
 
 {% endblock %}

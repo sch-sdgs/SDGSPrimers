@@ -23,7 +23,11 @@
                     <tr>
                         <td>{{ primer.alias }}<input name="id" value="{{primer.id}}" type="hidden"></td>
                         <td><div class="form-group"><input class="datepicker form-control input-sm" type="date" name="date_reconstituted" value="{{today}}"></div></td>
-                        <td><div class="form-group"><input class="form-control input-sm" type="text" required="required" name="conc"></div></td>
+                        <td>
+                            <div class="input-group"><input class="form-control input-sm" type="text" size="5"
+                                                            required="required" name="conc" value="100"><span
+                                    class="input-group-addon">μM</span></div>
+                        </td>
                         <td><div class="form-group" id="locations_{{primer.id}}"><select class="form-control input-sm" name="box" id="{{primer.id}}">
                             <option disabled selected value></option>
                             {% for box in boxes %}
@@ -31,7 +35,6 @@
                             {% endfor %}
 
                         </select></div></td>
-
                     </tr>
                 {% endfor %}
                 </table>

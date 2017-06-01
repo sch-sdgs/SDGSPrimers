@@ -50,7 +50,6 @@
                     <th>R Alias</th>
                     <th>R Sequence</th>
                     <th>R Location</th>
-
                 </tr>
                 </thead>
                 {% for i in pairs %}
@@ -61,8 +60,8 @@
                     {% if i.forward_rel.box_rel %}
                     <td>
                         <h6>
-                            <a href="{{ url_for('box.view_box_detail',box_id=i[0].box_rel.id)}}">{{ i[0].box_rel.name
-                                }}</a> | {{ i[0].row }} | {{ i[0].column }}
+                            <a href="{{ url_for('box.view_box_detail',box_id=i.forward_rel.box_rel.id)}}">{{ i.forward_rel.box_rel.name
+                                }}</a> | {{ i.forward_rel.row }} | {{ i.forward_rel.column }}
                         </h6>
                     </td>
                     {% else %}
@@ -78,8 +77,8 @@
                     {% if i.reverse_rel.box_rel %}
                     <td>
                         <h6>
-                            <a href="{{ url_for('box.view_box_detail',box_id=i[0].box_rel.id)}}">{{ i[0].box_rel.name
-                                }}</a> | {{ i[0].row }} | {{ i[0].column }}
+                            <a href="{{ url_for('box.view_box_detail',box_id=i.reverse_rel.box_rel.id)}}">{{ i.reverse_rel.box_rel.name
+                                }}</a> | {{ i.reverse_rel.row }} | {{ i.reverse_rel.column }}
                         </h6>
                     </td>
                     {% else %}

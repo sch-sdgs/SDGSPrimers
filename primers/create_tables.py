@@ -95,6 +95,7 @@ def create_db(conn):
                 box_id INTEGER,
                 row INTEGER,
                 column INTEGER,
+                concentration INTEGER,
                 user_aliquoted INTEGER,
                 date_aliquoted VARCHAR(20),
                 FOREIGN KEY(user_aliquoted) REFERENCES users(id),

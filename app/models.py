@@ -184,6 +184,7 @@ class Aliquots(db.Model):
     box_id = db.Column(db.Integer, db.ForeignKey('boxes.id'), nullable=False)
     row = db.Column(db.Integer)
     column = db.Column(db.Integer)
+    concentration = db.Column(db.Integer)
     date_aliquoted = db.Column(db.String(20), unique=False)
     user_aliquoted = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
@@ -191,11 +192,13 @@ class Aliquots(db.Model):
     primer_rel = db.relationship("Primers", lazy='joined', foreign_keys=[primer_id])
     user_aliquoted_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_aliquoted])
 
-    def __init__(self, primer_id=None, box_id=None, row=None, column=None, date_aliquoted=None, user_aliquoted=None):
+    def __init__(self, primer_id=None, box_id=None, row=None, column=None, concentration=None, date_aliquoted=None,
+                 user_aliquoted=None):
         self.primer_id = primer_id
         self.box_id = box_id
         self.row = row
         self.column = column
+        self.concentration = concentration
         self.date_aliquoted = date_aliquoted
         self.user_aliquoted = user_aliquoted
 
@@ -327,7 +330,7 @@ class Comments(db.Model):
     primer_rel = db.relationship("Primers", lazy='joined', foreign_keys=[primer_id])
     pair_rel = db.relationship("Pairs", lazy='joined', foreign_keys=[pair_id])
 
-    def __init__(self, primer_id=None, pair_id=None, comment=None, date=None,user_id=None):
+    def __init__(self, primer_id=None, pair_id=None, comment=None, date=None, user_id=None):
         self.primer_id = primer_id
         self.pair_id = pair_id
         self.comment = comment

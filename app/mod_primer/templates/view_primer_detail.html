@@ -213,6 +213,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <table class="table table-striped">
+                            <form method="post" action="{{url_for('primer.remove_aliquots')}}">
+                                <input type="hidden" name="primer_id" id="primer_id" value="{{ primer.id }}">
                             <thead>
                             <th>Aliquot ID</th>
                             <th>Date Aliquoted</th>
@@ -232,10 +234,15 @@
                                 {% else %}
                                 <td>No Location</td>
                                 {% endif %}
-                                <td><input type="checkbox" class=""></td>
+                                <td><input type="checkbox" id="{{ a.id }}" name="{{ a.id }}"></td>
                             </tr>
                             {% endfor %}
                         </table>
+
+                        <div class="text-right">
+                            <input class="btn btn-danger" type="submit" value="Remove Selected">
+                        </div>
+                    </form>
                     </div>
                 </div>
             </div>
