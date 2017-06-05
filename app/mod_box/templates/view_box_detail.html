@@ -31,13 +31,21 @@
                             <tr>
                                 {% for column in box_layout[row] %}
                                     <td class="text-center">
-                                        {% if box_layout[row][column] == "Empty" %}
+                                        {% if box_layout[row][column]["primer"] == "Empty" %}
                                             <a href="{{ url_for('box.fill_box',box_id=box.id,row=row,column=column) }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Fill</a>
                                         {% else %}
                                             {% if box_layout[row][column]|int != 0  %}
                                                 {{ box_layout[row][column] }}
-                                            {% elif box_layout[row][column] != '' %}
-                                                <a href="/primer/detail/{{ box_layout[row][column].id }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-resize-small"></span> {{ box_layout[row][column].alias }}</a>
+                                            {% elif 'primer' in box_layout[row][column] %}
+                                            {% if box_layout[row][column]["primer"] != '' %}
+                                                <a href="/primer/detail/{{ box_layout[row][column]['primer'].id }}" class="btn btn-primary btn-xs"><span class="glyphicon
+                                                {% if box_layout[row][column]["aliquot"] %}
+                                                    glyphicon-tint
+                                                    {% else %}
+                                                    glyphicon-resize-small
+                                                    {% endif %}
+                                                "></span> {{ box_layout[row][column]['primer'].alias }}</a>
+                                            {% endif %}
                                             {% endif %}
                                         {% endif %}
                                     </td>

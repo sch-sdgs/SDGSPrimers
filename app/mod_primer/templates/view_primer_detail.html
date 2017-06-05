@@ -6,8 +6,7 @@
 <div class="row">
     <div class="col-md-12">
         {% if primer.current != 0 %}
-        <h1><strong><span class="glyphicon glyphicon-resize-small"></span> {{ primer.alias }} ({{
-            convert_orient(primer.orientation) }}) </strong></h1>
+        <h1><strong><span class="glyphicon glyphicon-resize-small"></span> {{ primer.alias }}</strong> chr{{ primer.chrom }}:{{ primer.position }} ({{ convert_orient(primer.orientation) }}) </h1>
         {% else %}
         <h1><strong><span class="glyphicon glyphicon-remove"></span> {{ primer.alias }}</strong></h1>
         (This primer has been re-ordered)

@@ -19,6 +19,23 @@
                         </div>
                     </div>
 
+                     <div class="form-group">
+                        {{ form.chromosome.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                             <div class="input-group">
+                                <span class="input-group-addon">chr</span>
+                            {{ form.chromosome(required="required",class_="form-control") }}
+                                 </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.position.label(class_="col-lg-2 control-label") }}
+                        <div class="col-lg-10">
+                            {{ form.position(required="required",class_="form-control") }}
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         {{ form.sequence.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
@@ -86,13 +103,6 @@
                         {{ form.purification.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
                             {{ form.purification(class_="form-control") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.service.label(class_="col-lg-2 control-label") }}
-                        <div class="col-lg-10">
-                            {{ form.service(class_="form-control") }}
                         </div>
                     </div>
 

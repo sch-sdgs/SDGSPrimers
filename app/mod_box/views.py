@@ -3,9 +3,9 @@ from flask import render_template, request, url_for, redirect, jsonify
 from flask.ext.login import login_required, current_user
 from app.views import admin_required
 from forms import Box, Fill
-from app.models import Primers, Users, Boxes, Freezers
+from app.models import Primers, Users, Boxes, Freezers, Aliquots
 from app.primers import s
-
+import json
 
 
 box = Blueprint('box', __name__, template_folder='templates')
@@ -28,18 +28,27 @@ def box_layout_calculator(box):
     total_primers = 0
 
     p = Primers.query.filter_by(box_id=box.id).filter_by(current=1).all()
-
+    a = Aliquots.query.filter_by(box_id=box.id).all()
+    print a
     filled={}
 
     for primer in p:
-        print primer
-        print primer.row
 
         if primer.row not in filled:
             filled[primer.row]={}
         if primer.column not in filled[primer.row]:
-            filled[primer.row][primer.column]=primer
+            filled[primer.row][primer.column]={}
+            filled[primer.row][primer.column]["primer"]=primer
+            filled[primer.row][primer.column]["aliquot"] =False
 
+    for aliquot in a:
+
+        if aliquot.row not in filled:
+            filled[aliquot.row] = {}
+        if primer.column not in filled[aliquot.row]:
+            filled[aliquot.row][aliquot.column] = {}
+            filled[aliquot.row][aliquot.column]["primer"] = s.query(Primers).filter_by(id=aliquot.primer_id).first()
+            filled[aliquot.row][aliquot.column]["aliquot"] = True
 
     for row in range(1, box.rows + 1):
         box_layout[row] = {}
@@ -49,16 +58,20 @@ def box_layout_calculator(box):
             else:
                 if row in filled:
                     if column in filled[row]:
-                        box_layout[row][column] = filled[row][column]
+                        box_layout[row][column]={}
+                        box_layout[row][column]["primer"] = filled[row][column]["primer"]
+                        box_layout[row][column]["aliquot"] = filled[row][column]["aliquot"]
                         total_primers += 1
                     else:
-                        box_layout[row][column] = "Empty"
+                        box_layout[row][column] = {}
+                        box_layout[row][column]["primer"] = "Empty"
                 else:
-                    box_layout[row][column] = "Empty"
+                    box_layout[row][column] = {}
+                    box_layout[row][column]["primer"] = "Empty"
 
     total_spaces = box.rows * box.columns
     percent_full = (total_primers / float(total_spaces)) * 100
-
+    print box_layout
     return {"box_layout":box_layout,"percent_full":percent_full}
 
 @box.route('/view', methods=['GET', 'POST'])

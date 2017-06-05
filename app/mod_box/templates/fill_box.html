@@ -13,12 +13,9 @@
                     <div class="form-group">
                         {{ form.primer.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.primer(class_="form-control ui-autocomplete-input") }}
+                            {{ form.primer(class_="form-control ui-autocomplete-input",required="True",placeholder="Start Typing Primer Alias") }}
                         </div>
                     </div>
-
-
-
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
                             {{ form.submit(class_="btn btn-primary") }}
@@ -36,18 +33,17 @@
             p.autocomplete({
                 source: function (request, response) {
                     $.getJSON("{{url_for('box.autocomplete')}}", {
-                        q: request.term // in flask, "q" will be the argument to look for using request.args
+                        q: request.term
                     }, function (data) {
-                        response(data.matching_results); // matching_results from jsonify
+                        response(data.matching_results);
                     });
                 },
                 minLength: 2,
                 select: function (event, ui) {
-                    console.log(ui.item.value); // not in your question, but might help later
+                    console.log(ui.item.value);
                 }
             });
         })
-
 </script>
 
 {% endblock %}

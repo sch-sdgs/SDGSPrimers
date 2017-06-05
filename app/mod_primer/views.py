@@ -14,14 +14,14 @@ import time
 import itertools
 from app.mod_box.views import box_layout_calculator
 import csv
-
-primer = Blueprint('primer', __name__, template_folder='templates')
 from sqlalchemy.sql import func, or_
 import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
 import os
 import random
+
+primer = Blueprint('primer', __name__, template_folder='templates')
 
 
 def get_user_by_username(s, username):
@@ -57,7 +57,6 @@ def get_comments(primer_id=None, pair_id=None):
     return comments
 
 
-
 @primer.route('/view', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -72,7 +71,6 @@ def view_primers(message=None, modifier=None, ids=None):
 @login_required
 @admin_required
 def view_pairs(message=None, modifier=None, ids=None):
-    # pairs= s.query(Primers).with_entities(Primers.id,Primers.alias,Primers.sequence,Primers.box_id,Primers.row,Primers.column,Primers.pair_id).group_by(Primers.pair_id).all()
     pairs = s.query(Pairs).all()
     for i in pairs:
         print i
@@ -83,10 +81,7 @@ def view_pairs(message=None, modifier=None, ids=None):
 @login_required
 @admin_required
 def view_primer_detail(primer_id, message=None, modifier=None):
-    # primer = s.query(Primers).join(Users).filter(Primers.id==primer_id).first()
     primer = Primers.query.filter_by(id=primer_id).first()
-    # primer = Primers.query.join(Users).filter_by(id=primer_id).first()
-
     pairs = Pairs.query.filter(or_(Pairs.forward == primer_id, Pairs.reverse == primer_id)).first()
 
     if pairs:
@@ -133,11 +128,12 @@ def add_primer():
         p = Primers()
         p.alias = request.form['alias']
         p.sequence = sequence.upper()
+        p.chrom = request.form['chromosome']
+        p.position = request.form['position']
         p.orientation = request.form['orientation']
         p.application = request.form['application']
         p.date_designed = request.form['dt']
         p.scale = request.form['scale']
-        p.service = request.form['service']
         p.mod_5 = request.form['mod_5']
         p.mod_3 = request.form['mod_3']
 
@@ -186,7 +182,6 @@ def add_primer():
 def bulk_add():
     if request.method == 'POST':
 
-        print request.form["data"]
         data = request.form["data"].rstrip().split("\n")
         primers = []
         for d in data:
@@ -197,7 +192,7 @@ def bulk_add():
                 p = Primers()
 
                 p.alias = alias.rstrip().strip()
-                p.chrom = chrom
+                p.chrom = chrom.replace("chr","")
                 p.position = start
                 p.sequence = sequence.replace(" ", "")
                 p.date_designed = time.strftime("%Y-%m-%d")
@@ -210,19 +205,21 @@ def bulk_add():
                 primers.append(p.id)
 
         primers_info = s.query(Primers).filter(Primers.id.in_(primers))
-        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/5_prime_mods.json") as json_data:
+
+        with open(os.path.dirname(os.path.dirname(__file__)) + "/resources/5_prime_mods.json") as json_data:
             mod_5 = json.load(json_data)
 
-        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/3_prime_mods.json") as json_data:
+        with open(os.path.dirname(os.path.dirname(__file__)) + "/resources/3_prime_mods.json") as json_data:
             mod_3 = json.load(json_data)
 
-        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/scales.json") as json_data:
+        with open(os.path.dirname(os.path.dirname(__file__)) + "/resources/scales.json") as json_data:
             scales = json.load(json_data)
 
-        with open(os.path.dirname(os.path.dirname(__file__))+"/resources/purifications.json") as json_data:
+        with open(os.path.dirname(os.path.dirname(__file__)) + "/resources/purifications.json") as json_data:
             purifications = json.load(json_data)
 
-        return render_template('bulk_process.html', purifications=purifications, scales=scales, mod_5=mod_5, mod_3=mod_3, primers_info=primers_info)
+        return render_template('bulk_process.html', purifications=purifications, scales=scales, mod_5=mod_5,
+                               mod_3=mod_3, primers_info=primers_info)
 
 
     else:
@@ -239,10 +236,16 @@ def bulk_process():
     ids = request.form.getlist("id")
     pairs = request.form.getlist("pair")
     orients = request.form.getlist("orientation")
+    mods_5 = request.form.getlist("5_mod")
+    mods_3 = request.form.getlist("3_mod")
+    scales = request.form.getlist("scale")
+    purifications = request.form.getlist("purification")
 
-    for id, pair, orient in itertools.izip(ids, pairs, orients):
+    for id, pair, orient, mod_5, mod_3, scale, purification in itertools.izip(ids, pairs, orients, mods_5, mods_3,
+                                                                              scales, purifications):
 
-        update = {"orientation": int(orient)}
+        update = {"orientation": int(orient), "scale": scale, "mod_5": mod_5, "mod_3": mod_3,
+                  "purification": purification}
         s.query(Primers).filter_by(id=int(id)).update(update)
 
         # deal with pairs then update everything else
@@ -266,8 +269,7 @@ def bulk_process():
             s.query(Primers).filter_by(id=int(pair)).update(update)
             s.commit()
 
-    return view_primers(message="Primers Added",modifier="success")
-
+    return view_primers(message="Primers Added", modifier="success")
 
 
 @primer.route('/receive', methods=['GET', 'POST'])
@@ -500,7 +502,7 @@ def bulk_aliquot():
                             empty.append(i.name + "|" + str(row) + "|" + str(column))
 
         primers = s.query(Primers).filter(Primers.id.in_(ids)).all()
-        return render_template('place_aliquots.html', primers=primers,aliquots=aliquots, boxes=empty)
+        return render_template('place_aliquots.html', primers=primers, aliquots=aliquots, boxes=empty)
     else:
         ids = request.args['ids'].split(",")
         primers = s.query(Primers).filter(Primers.id.in_(ids)).filter(Primers.user_acceptance != None).filter_by(
@@ -519,12 +521,19 @@ def place_aliquot():
         ids = request.form.getlist("id")
         boxes = request.form.getlist("box")
         concentrations = request.form.getlist("concentration")
+        print ids
+        print boxes
+        print concentrations
         for id, concentration, loc in itertools.izip(ids, concentrations, boxes):
             box_name, row, column = loc.split("|")
             id_query = s.query(Boxes).filter_by(name=box_name).first()
-            s.query(Aliquots).filter_by(id=int(id)).update({"box_id": id_query.id, "row": row, "column": column, "concentration": concentration})
+            print "box_id_query"
+            print id_query
+            s.query(Aliquots).filter_by(id=int(id)).update(
+                {"box_id": id_query.id, "row": row, "column": column, "concentration": concentration})
         s.commit()
         return view_primers(message="Aliquots Created and Stored!", modifier="success")
+
 
 @primer.route('/remove_aliquots', methods=['GET', 'POST'])
 @login_required
@@ -536,8 +545,9 @@ def remove_aliquots():
             s.query(Aliquots).filter_by(id=aliquot_id).delete()
         s.commit()
 
+        return view_primer_detail(primer_id=request.form["primer_id"], message="Success! Aliquots Deleted",
+                                  modifier="warning")
 
-        return view_primer_detail(primer_id=request.form["primer_id"],message="Success! Aliquots Deleted", modifier="warning")
 
 @primer.route('/order', methods=['GET', 'POST'])
 @login_required
@@ -556,8 +566,8 @@ def order():
             line.append(p["mod_5"])
             line.append(p["sequence"])
             line.append(p["mod_3"])
-            #todo fix this - scale is none it fails
-            #line.append(p["scale"].replace(" UMO",""))
+            # todo fix this - scale is none it fails
+            # line.append(p["scale"].replace(" UMO",""))
             line.append(p["purification"])
             line.append("Dry")
             line.append("None")
@@ -598,7 +608,7 @@ def search():
             search = int(raw[:-1])
             results = s.query(Primers).filter_by(id=search).all()
         if request.form["term"] != "":
-            search = "*"+request.form["term"]+"*"
+            search = "*" + request.form["term"] + "*"
             results = Primers.query.whoosh_search(search).filter_by(current=1).group_by(Primers).all()
 
         return render_template('search_primers.html', form=form, primers=results, request=request, term=search)
@@ -711,7 +721,7 @@ def save_cart(message=None, modifier=None, ids=None):
                 s.commit()
                 return view_cart(message='Cart "' + c.name + '" Saved!', modifier='success')
             else:
-                return view_cart()
+                return view_cart(message="No Primers to Save!", modifier='danger')
         else:
             return view_cart()
 
@@ -727,7 +737,7 @@ def print_pick_list(ids=None):
         ids = ids
     primers = s.query(Primers, func.count(Aliquots.id)).outerjoin(Aliquots).filter(
         Primers.id.in_(ids)).filter(
-        Primers.current == 1).group_by(
+        Primers.current == 1).filter(Primers.box_id != None).group_by(
         Primers).all()
 
     iw = ImageWriter()
@@ -740,9 +750,6 @@ def print_pick_list(ids=None):
         ean.default_writer_options['text_distance'] = 3
         ean.default_writer_options['font_size'] = 0
         file = ean.save(location + '/static/tmp/' + str(i[0].id))
-        # im = Image.open(file)
-        # im.resize((150,120)).save(location+'/static/tmp/'+str(i[0].id)+"_resized.png")
-        # print file
 
     return render_template('pick_list_print.html', user=current_user.id, date=time.strftime("%Y-%m-%d"),
                            time=time.strftime("%H:%M"), primers=primers, location=location)
@@ -754,6 +761,14 @@ def print_pick_list(ids=None):
 def mark_as_pair():
     if 'ids' in request.args:
         ids = request.args['ids'].split(",")
+
+        for id in ids:
+            forward = s.query(Pairs).filter_by(forward=id).count()
+            reverse = s.query(Pairs).filter_by(reverse=id).count()
+            if forward > 0 or reverse > 0:
+                return view_primers(message="<strong>Warning!</strong> Are the primers already part of a pair?",
+                                    modifier="danger")
+
         if len(ids) < 3 and len(ids) > 1:
             print ids
 
@@ -785,15 +800,18 @@ def mark_as_pair():
             return view_primers(message="<strong>Warning!</strong> You need to select 2 primers to make a pair!",
                                 modifier="danger")
 
+
 @primer.route('/break_pair', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def break_pair():
-    primer_id=request.args["primer_id"]
-    pair = s.query(Pairs).filter((Pairs.forward==primer_id)|(Pairs.reverse==primer_id)).first()
+    primer_id = request.args["primer_id"]
+    pair = s.query(Pairs).filter((Pairs.forward == primer_id) | (Pairs.reverse == primer_id)).first()
     s.query(Pairs).filter_by(id=pair.id).delete()
-    s.query(Primers).filter_by(pair_id=pair.id).update({'pair_id':None})
+    s.query(Primers).filter_by(pair_id=pair.id).update({'pair_id': None})
     s.commit()
+
+    return view_primer_detail(primer_id=primer_id)
 
 
 @primer.route('/audit', methods=['GET', 'POST'])

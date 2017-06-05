@@ -52,12 +52,14 @@ from mod_primer.views import primer
 from mod_box.views import box
 from mod_freezer.views import freezer
 from mod_set.views import set
+from mod_api.views import api_blueprint
 
 app.register_blueprint(admin,url_prefix='/admin')
 app.register_blueprint(primer,url_prefix='/primer')
 app.register_blueprint(box,url_prefix='/box')
 app.register_blueprint(freezer,url_prefix='/freezer')
 app.register_blueprint(set,url_prefix='/set')
+app.register_blueprint(api_blueprint,url_prefix='/api')
 
 
 
