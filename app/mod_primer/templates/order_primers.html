@@ -6,13 +6,18 @@
         <div class="well bs-component">
             <div class="row">
                 <div class="col-md-10">
-                    <h3><span class="glyphicon glyphicon-shopping-cart"></span> Order Primers</h3></div>
+                    <h3><span class="glyphicon glyphicon-check"></span> Order Primers</h3><br>
+                    <div><h6>Select the primers you wish to order by selecting them in the table below.</h6>
+                        <h6>Clicking "With Selected..." and then "Order" will download a CSV file for upload to sigma
+                            and will set the selected primers to ordered.</h6></div>
+                </div>
                 <div class="col-md-2 text-right">
                     <div class="btn-group">
                         <a href="#" class="btn btn-default btn-sm disabled">With Selected...</a>
                         <a href="#" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
                            aria-expanded="false"><span class="caret"></span></a>
                         <ul class="dropdown-menu">
+
                             <li><a href="#" id="action5" name="order">Order</a></li>
                         </ul>
                     </div>
@@ -61,5 +66,7 @@
         </div>
     </div>
 </div>
+
+
 
 {% endblock %}

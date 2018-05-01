@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import render_template, request, url_for, redirect, send_file, session
 from flask.ext.login import login_required, current_user
-from app.views import admin_required
 from forms import Primer, Receive, Search, BulkPrimer, Comment
 from app.models import Primers, Users, Boxes, Aliquots, Applications, SavedCarts, Pairs, Comments
 from app.primers import s
@@ -24,19 +23,13 @@ import random
 primer = Blueprint('primer', __name__, template_folder='templates')
 
 
-def get_user_by_username(s, username):
-    user = s.query(Users).filter_by(username=username)
-    for i in user:
-        return i.id
-
-
 @primer.context_processor
 def utility_processor():
     def get_glyphicon(value):
         if value is not None and value != "":
             return '<span class="label label-success"><i class="glyphicon glyphicon-ok" aria-hidden="true"></i> YES</span>'
         else:
-            return '<span class="label label-default"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i> NO</span>'
+            return '<span class="label label-danger"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i> NO</span>'
 
     return dict(get_glyphicon=get_glyphicon)
 
@@ -59,17 +52,14 @@ def get_comments(primer_id=None, pair_id=None):
 
 @primer.route('/view', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_primers(message=None, modifier=None, ids=None):
-    # primers = Primers.query.filter_by(current=1).all()
-    primers = s.query(Primers, func.count(Aliquots.id)).outerjoin(Aliquots).filter(Primers.current == 1).group_by(
+    primers = s.query(Primers, func.count(Aliquots.id)).outerjoin(Aliquots).filter(Primers.current == 1).filter(Primers.sequence != None).group_by(
         Primers).all()
     return render_template('view_primers.html', primers=primers, message=message, modifier=modifier)
 
 
 @primer.route('/view/pairs', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_pairs(message=None, modifier=None, ids=None):
     pairs = s.query(Pairs).all()
     for i in pairs:
@@ -79,7 +69,6 @@ def view_pairs(message=None, modifier=None, ids=None):
 
 @primer.route('/detail/<int:primer_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_primer_detail(primer_id, message=None, modifier=None):
     primer = Primers.query.filter_by(id=primer_id).first()
     pairs = Pairs.query.filter(or_(Pairs.forward == primer_id, Pairs.reverse == primer_id)).first()
@@ -112,7 +101,6 @@ def view_primer_detail(primer_id, message=None, modifier=None):
 
 @primer.route('/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_primer():
     form = Primer()
     if request.method == 'POST':
@@ -131,13 +119,13 @@ def add_primer():
         p.chrom = request.form['chromosome']
         p.position = request.form['position']
         p.orientation = request.form['orientation']
-        p.application = request.form['application']
+        p.application = int(request.form['application'])
         p.date_designed = request.form['dt']
         p.scale = request.form['scale']
         p.mod_5 = request.form['mod_5']
         p.mod_3 = request.form['mod_3']
 
-        p.user_designed = get_user_by_username(s, current_user.id)
+        p.user_designed = current_user.database_id
         p.current = 1
 
         s.add(p)
@@ -178,7 +166,6 @@ def add_primer():
 
 @primer.route('/bulk_add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_add():
     if request.method == 'POST':
 
@@ -196,7 +183,7 @@ def bulk_add():
                 p.position = start
                 p.sequence = sequence.replace(" ", "")
                 p.date_designed = time.strftime("%Y-%m-%d")
-                p.user_designed = get_user_by_username(s, current_user.id)
+                p.user_designed = current_user.database_id
                 p.current = 1
                 p.application = int(request.form["application"])
 
@@ -231,7 +218,6 @@ def bulk_add():
 
 @primer.route('/bulk_process', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_process():
     ids = request.form.getlist("id")
     pairs = request.form.getlist("pair")
@@ -274,7 +260,6 @@ def bulk_process():
 
 @primer.route('/receive', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def receive_primer():
     form = Receive()
     primers_awaiting_receipt = [(row.id, row.alias) for row in Primers.query.filter_by(date_received=None).all()]
@@ -286,7 +271,7 @@ def receive_primer():
         update = {}
         update["lot_no"] = request.form['lot_no']
         update["date_received"] = request.form['dt_received']
-        update["user_received"] = get_user_by_username(s, current_user.id)
+        update["user_received"] = current_user.database_id
         print update
         print s.query(Primers).filter_by(id=primer_id).update(update)
         s.commit()
@@ -305,7 +290,6 @@ def receive_primer():
 
 @primer.route('/reorder/<int:primer_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def reorder_primer(primer_id):
     update = {"current": 0}
     s.query(Primers).filter_by(id=primer_id).update(update)
@@ -325,7 +309,6 @@ def reorder_primer(primer_id):
             to_delete.append(i)
 
     for i in to_delete:
-        # dict_data.pop(i, None)
         del dict_data[i]
 
     print json.dumps(dict_data, indent=4)
@@ -348,15 +331,79 @@ def reorder_primer(primer_id):
 
     return redirect(url_for('primer.view_primer_detail', primer_id=p.id))
 
+@primer.route('/redesign/<int:primer_id>', methods=['GET', 'POST'])
+@login_required
+def redesign_primer(primer_id):
+
+    #set current primer to not current
+    #make new record but without sequence and chr and pos
+    #present page for adding these
+
+    update = {"current": 0}
+    s.query(Primers).filter_by(id=primer_id).update(update)
+    s.commit()
+
+    to_copy = s.query(Primers).filter_by(id=primer_id).first()
+    #dict_data = to_copy.to_dict()
+    # to_delete = ["worklist", "user_received", "date_received", "user_ordered", "date_ordered", "user_acceptance",
+    #              "date_acceptance", "user_reconstituted", "date_reconstituted", "lot_no", "concentration", "id", "row",
+    #              "column","sequence","position"]
+    #
+    # dict_data["lot_no"] = None
+    # dict_data["current"] = 1
+    #
+    # for i in dict_data:
+    #     if "rel" in i:
+    #         to_delete.append(i)
+    #
+    # for i in to_delete:
+    #     del dict_data[i]
+    #
+    # print json.dumps(dict_data, indent=4)
+    #
+    # p = Primers(**dict_data)
+    # s.add(p)
+    # s.commit()
+    #
+    # if dict_data["orientation"] == 0:
+    #     pair_update = {"forward": p.id}
+    # else:
+    #     pair_update = {"reverse": p.id}
+    #
+    # s.query(Pairs).filter_by(id=dict_data["pair_id"]).update(pair_update)
+    # s.commit()
+    #
+    # comments_update = {"primer_id": p.id}
+    # s.query(Comments).filter_by(primer_id=primer_id).update(comments_update)
+    # s.commit()
+
+    #todo need to delete all aliquots
+
+    form = Primer()
+
+    form.alias.data = to_copy.alias
+    form.chromosome.data = to_copy.chrom
+
+    applications = [(row.id, row.name) for row in Applications.query.all()]
+    form.application.choices = applications
+    print primer_id
+    return render_template('redesign_primer.html', form=form, primer_id=primer_id)
+
+@primer.route('/redesign_undo/<int:primer_id>', methods=['GET', 'POST'])
+@login_required
+def undo_redesign_primer(primer_id):
+    update = {"current": 1}
+    s.query(Primers).filter_by(id=primer_id).update(update)
+    s.commit()
+    return view_primers(message="Primer Re-Design Cancelled", modifier="success")
 
 @primer.route('/bulk_check', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_check():
     if request.method == 'POST':
         for id in request.form:
             s.query(Primers).filter_by(id=int(id)).update(
-                {"user_checked": get_user_by_username(s, current_user.id), "date_checked": time.strftime("%Y-%m-%d")})
+                {"user_checked": current_user.database_id, "date_checked": time.strftime("%Y-%m-%d")})
 
         s.commit()
         return view_primers(message="Primers Marked as Checked", modifier="success")
@@ -371,7 +418,6 @@ def bulk_check():
 
 @primer.route('/bulk_receive', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_receive():
     if request.method == 'POST':
         ids = request.form.getlist("id")
@@ -379,7 +425,7 @@ def bulk_receive():
         date_receiveds = request.form.getlist("date_received")
         for id, lot_no, date_received in itertools.izip(ids, lot_nos, date_receiveds):
             s.query(Primers).filter_by(id=int(id)).update(
-                {"lot_no": lot_no, "user_received": get_user_by_username(s, current_user.id),
+                {"lot_no": lot_no, "user_received": current_user.database_id,
                  "date_received": date_received})
         s.commit()
         return view_primers(message="Primers Marked as Received", modifier="success")
@@ -395,7 +441,6 @@ def bulk_receive():
 
 @primer.route('/bulk_reconstitute', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_reconstitute():
     if request.method == 'POST':
         ids = request.form.getlist("id")
@@ -413,8 +458,7 @@ def bulk_reconstitute():
             print id
 
             s.query(Primers).filter_by(id=int(id)).update({"box_id": id_query.id, "row": row, "column": column,
-                                                           "user_reconstituted": get_user_by_username(s,
-                                                                                                      current_user.id),
+                                                           "user_reconstituted": current_user.database_id,
                                                            "date_reconstituted": date_recon})
         s.commit()
         return view_primers(message="Primers Marked as Reconstituted", modifier="success")
@@ -433,19 +477,21 @@ def bulk_reconstitute():
 
             for i in boxes:
                 box = box_layout_calculator(i)
+                print box
                 if box["percent_full"] != 100:
                     for row in box["box_layout"]:
                         for column in box["box_layout"][row]:
-                            if column != 0 and row != 0 and box["box_layout"][row][column] == "Empty":
-                                empty.append(i.name + "|" + str(row) + "|" + str(column))
-
+                            if column != 0 and row != 0:
+                                if box["box_layout"][row][column]['primer'] == "Empty":
+                                    empty.append(i.name + "|" + str(row) + "|" + str(column))
+            print "----"
+            print empty
             return render_template('bulk_reconstitute.html', primers=primers, today=time.strftime("%Y-%m-%d"),
                                    boxes=empty)
 
 
 @primer.route('/bulk_at', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_at():
     if request.method == 'POST':
         ids = request.form.getlist("id")
@@ -453,7 +499,7 @@ def bulk_at():
         date_ats = request.form.getlist("date_at")
         for id, worklist, date_at in itertools.izip(ids, worklists, date_ats):
             s.query(Primers).filter_by(id=int(id)).update(
-                {"worklist": worklist, "user_acceptance": get_user_by_username(s, current_user.id),
+                {"worklist": worklist, "user_acceptance": current_user.database_id,
                  "date_acceptance": date_at})
         s.commit()
         return view_primers(message="Primers Marked as Acceptance Tested", modifier="success")
@@ -469,7 +515,6 @@ def bulk_at():
 
 @primer.route('/bluk_aliquot', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def bulk_aliquot():
     if request.method == 'POST':
         ids = request.form.getlist("id")
@@ -481,7 +526,7 @@ def bulk_aliquot():
                 a = Aliquots()
                 a.primer_id = id
                 a.date_aliquoted = date_aliquoted
-                a.user_aliquoted = get_user_by_username(s, current_user.id)
+                a.user_aliquoted = current_user.database_id
                 s.add(a)
                 s.commit()
                 aliquot_ids.append(a.id)
@@ -498,7 +543,7 @@ def bulk_aliquot():
             if box["percent_full"] != 100:
                 for row in box["box_layout"]:
                     for column in box["box_layout"][row]:
-                        if column != 0 and row != 0 and box["box_layout"][row][column] == "Empty":
+                        if column != 0 and row != 0 and box["box_layout"][row][column]["primer"] == "Empty":
                             empty.append(i.name + "|" + str(row) + "|" + str(column))
 
         primers = s.query(Primers).filter(Primers.id.in_(ids)).all()
@@ -515,20 +560,14 @@ def bulk_aliquot():
 
 @primer.route('/place_aliquot', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def place_aliquot():
     if request.method == 'POST':
         ids = request.form.getlist("id")
         boxes = request.form.getlist("box")
         concentrations = request.form.getlist("concentration")
-        print ids
-        print boxes
-        print concentrations
         for id, concentration, loc in itertools.izip(ids, concentrations, boxes):
             box_name, row, column = loc.split("|")
             id_query = s.query(Boxes).filter_by(name=box_name).first()
-            print "box_id_query"
-            print id_query
             s.query(Aliquots).filter_by(id=int(id)).update(
                 {"box_id": id_query.id, "row": row, "column": column, "concentration": concentration})
         s.commit()
@@ -537,7 +576,6 @@ def place_aliquot():
 
 @primer.route('/remove_aliquots', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def remove_aliquots():
     if request.method == 'POST':
         print request.form
@@ -551,11 +589,14 @@ def remove_aliquots():
 
 @primer.route('/order', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def order():
     if 'ids' in request.args:
         ids = request.args['ids'].split(",")
+
         primers = s.query(Primers).filter(Primers.id.in_(ids)).filter_by(current=1).all()
+
+        if ids[0] == '':
+            return render_template('order_primers.html', primers=primers, message='No primers available to order', modifier='warning')
 
         output = []
 
@@ -566,8 +607,10 @@ def order():
             line.append(p["mod_5"])
             line.append(p["sequence"])
             line.append(p["mod_3"])
-            # todo fix this - scale is none it fails
-            # line.append(p["scale"].replace(" UMO",""))
+            if p["scale"]:
+                line.append(p["scale"].replace(" UMO",""))
+            else:
+                line.append(None)
             line.append(p["purification"])
             line.append("Dry")
             line.append("None")
@@ -585,7 +628,7 @@ def order():
 
         for id in ids:
             s.query(Primers).filter_by(id=int(id)).update(
-                {"user_ordered": get_user_by_username(s, current_user.id), "date_ordered": time.strftime("%Y-%m-%d")})
+                {"user_ordered": current_user.database_id, "date_ordered": time.strftime("%Y-%m-%d")})
         s.commit()
 
         return send_file('/tmp/' + filename, as_attachment=True)
@@ -602,16 +645,16 @@ def order():
 def search():
     form = Search()
     if request.method == 'POST':
-        if request.form["barcode"] != "":
-            raw = request.form["barcode"]
-            print raw
-            search = int(raw[:-1])
-            results = s.query(Primers).filter_by(id=search).all()
+        # if request.form["barcode"] != "":
+        #     raw = request.form["barcode"]
+        #     print raw
+        #     search = int(raw[:-1])
+        #     results = s.query(Primers).filter_by(id=search).all()
         if request.form["term"] != "":
             search = "*" + request.form["term"] + "*"
             results = Primers.query.whoosh_search(search).filter_by(current=1).group_by(Primers).all()
 
-        return render_template('search_primers.html', form=form, primers=results, request=request, term=search)
+        return render_template('search_primers.html', form=form, primers=results, request=request, term=search.replace("*",""))
 
     else:
         return render_template('search_primers.html', form=form, request=request)
@@ -666,7 +709,6 @@ def remove_from_cart():
 
 @primer.route('/cart/view', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_cart(message=None, modifier=None, ids=None):
     if "cart" in session:
         if len(session["cart"]) > 0:
@@ -684,7 +726,6 @@ def view_cart(message=None, modifier=None, ids=None):
 
 @primer.route('/cart/view_saved', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_saved_cart(message=None, modifier=None, name=None):
     primers = s.query(Primers, func.count(Aliquots.id)).outerjoin(Aliquots).filter(
         Primers.id.in_(request.args['ids'])).filter(
@@ -697,7 +738,6 @@ def view_saved_cart(message=None, modifier=None, name=None):
 
 @primer.route('/cart/deleted_saved_cart', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def delete_saved_cart(message=None, modifier=None, name=None):
     SavedCarts.query.filter_by(name=request.form['name']).delete()
     s.commit()
@@ -707,7 +747,6 @@ def delete_saved_cart(message=None, modifier=None, name=None):
 
 @primer.route('/cart/save', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def save_cart(message=None, modifier=None, ids=None):
     if request.method == 'POST':
         if "cart" in session:
@@ -715,7 +754,7 @@ def save_cart(message=None, modifier=None, ids=None):
                 c = SavedCarts()
                 c.name = request.form["name"]
                 c.date = time.strftime("%Y-%m-%d")
-                c.user = get_user_by_username(s, current_user.id)
+                c.user = current_user.database_id
                 c.ids = session["cart"]
                 s.add(c)
                 s.commit()
@@ -728,7 +767,6 @@ def save_cart(message=None, modifier=None, ids=None):
 
 @primer.route('/picklist', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def print_pick_list(ids=None):
     location = os.path.dirname(os.path.dirname(__file__))
     if 'ids' in request.args:
@@ -754,10 +792,49 @@ def print_pick_list(ids=None):
     return render_template('pick_list_print.html', user=current_user.id, date=time.strftime("%Y-%m-%d"),
                            time=time.strftime("%H:%M"), primers=primers, location=location)
 
+@primer.route('/picklist_aliquot', methods=['GET', 'POST'])
+@login_required
+def print_aliquot_pick_list(ids=None):
+    location = os.path.dirname(os.path.dirname(__file__))
+    if 'ids' in request.args:
+        ids = request.args['ids'].split(",")
+    elif ids is not None:
+        ids = ids
+    primers = s.query(Primers, func.count(Aliquots.id)).join(Aliquots).filter(
+        Primers.id.in_(ids)).filter(
+        Primers.current == 1).filter(Primers.box_id != None).group_by(
+        Primers).all()
+    print dir(primers[0][0])
+
+    all_aliquots = []
+
+    print ids
+    #todo you're here and trying to pick 1st aliquot for each primer = loop through ids and get 1st then add to list for iteration below?
+
+    for id in ids:
+        aliquot = s.query(Aliquots).filter(Aliquots.primer_id==id).filter(Primers.current==1).filter(Aliquots.row.isnot(None)).first()
+        if aliquot is not None:
+            all_aliquots.append(aliquot)
+
+
+
+    print all_aliquots
+    iw = ImageWriter()
+    for i in all_aliquots:
+        print i.id
+
+        ean = barcode.codex.Code39(str(i.primer_id), add_checksum=True, writer=iw)
+        ean.default_writer_options['module_height'] = 2.0
+        ean.default_writer_options['module_width'] = 0
+        ean.default_writer_options['text_distance'] = 3
+        ean.default_writer_options['font_size'] = 0
+        file = ean.save(location + '/static/tmp/' + str(i.id))
+
+    return render_template('pick_list_print_aliquot.html', user=current_user.id, date=time.strftime("%Y-%m-%d"),
+                           time=time.strftime("%H:%M"), aliquots=all_aliquots, location=location)
 
 @primer.route('/mark_as_pair', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def mark_as_pair():
     if 'ids' in request.args:
         ids = request.args['ids'].split(",")
@@ -803,7 +880,6 @@ def mark_as_pair():
 
 @primer.route('/break_pair', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def break_pair():
     primer_id = request.args["primer_id"]
     pair = s.query(Pairs).filter((Pairs.forward == primer_id) | (Pairs.reverse == primer_id)).first()
@@ -816,7 +892,6 @@ def break_pair():
 
 @primer.route('/audit', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def audit():
     primers = s.query(Primers).filter_by(current=1).all()
 
@@ -830,13 +905,12 @@ def audit():
 
 @primer.route('/add_comment', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_comment():
     c = Comments()
     c.comment = request.form["comment"]
     c.primer_id = int(request.form["object_id"])
     c.date = time.strftime("%Y-%m-%d %H:%M")
-    c.user_id = get_user_by_username(s, current_user.id)
+    c.user_id = current_user.database_id
     s.add(c)
     s.commit()
 

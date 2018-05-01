@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h1>FAQs</h1>
+    <br/>
+    Can't find the answer to your question? Email it to <a
+        href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#PanelPal%20PanelPal%20Question"
+        target="_top">bioinformatics</a>
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-title expand">
+                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                    <a href="#">How do I change the display properties in MS Internet Explorer?</a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse">
+                <div class="panel-body">
+                    To display Primers correctly in IE, you may need to change some of your default settings:<br/>
+                    <ul class="list-unstyled" style="padding-left: 10px;">
+                        <li>- Press
+                            <button class="btn btn-sm btn-primary">Alt</button>
+                            to display the IE menu
+                        </li>
+                        <li>- Click "Tools" and then "Compatibility View settings"</li>
+                        <li>
+                            <div class="col-md-12"><br>
+                                <center><img style="margin:20px 0px" src="/static/images/Tools_menu_faq.PNG"></center>
+                            </div>
+                            <br/>
+                        </li>
+                        <li>- In the Compatibility View menu, make sure the "Display intranet sites in compatibility view
+                            is unchecked
+                        </li>
+                        <li>
+                            <div class="col-md-12"><br>
+                                <center><img style="margin:20px 0px" src="/static/images/CVS_menu.PNG"></center>
+                            </div>
+                            <br/>
+                        </li>
+                         <div class="col-md-12">
+                        <div class="alert alert-danger" role="alert"><strong>Warning! </strong>
+                        If Starlims is not in the list; open
+                            Starlims as normal, go to the Compatibility View menu as described above and click "Add" to
+                            make sure it is still shown in compatibiltiy view
+                            </div>
+                        </div>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-title expand">
+                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                    <a href="#">Why can't I login to Primers?</a>
+                </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    In order to use Primers, your windows username must be stored in the database.<br/>
+                    If you are not able to login to Primers, send an email <strong>with your windows login name</strong> to <a
+                        href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#Primers%20#registration%20New%20login"
+                        target="_top">bioinformatics</a> and someone will add you to the system.
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-title expand">
+                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                    <a href="#">What do I enter under primer position?</a>
+                </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse">
+                <div class="panel-body">
+                   This is the position of the primer in the genome. Choose the relevant chromosomes and enter the 5'
+                    (left most) position of the primer in the position box.
+                   </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-title expand">
+                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                    <a href="#">How do I identify pairs of primers?</a>
+                </h4>
+            </div>
+            <div id="collapse4" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p>When viewing primers in tables you can see a primer is assigned to a pair as the paired icon is displayed next to it:</p>
+                    <center><img style="margin:20px 0px" src="/static/images/paired.png"></center>
+                    <p>If you click the name of a primer that is paired the information about the other member of the pair will be displayed on the primer detail page.</p>
+                    <p>You can also view primers as pairs by clicking the "View As Pairs" button on the Primers > View Primers page.</p>
+                    <center><img style="margin:20px 0px" src="/static/images/view_paired.png"></center>
+                   </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="/static/js/attrchange.js"></script>
+<script>
+
+
+    $('.panel-title').attrchange({
+        trackValues: true,
+        callback: function (e) {
+            if (e.newValue.indexOf('panel-title') > -1) {
+                $glyph = $(this).children().eq(0);
+                if (e.newValue.indexOf('collapsed') > -1) {
+                    $glyph.removeClass('glyphicon-minus');
+                    $glyph.addClass('glyphicon-plus');
+                }
+                else {
+                    $glyph.removeClass('glyphicon-plus');
+                    $glyph.addClass('glyphicon-minus');
+                }
+            }
+
+        }
+    })
+</script>
+
+
+{% endblock %}

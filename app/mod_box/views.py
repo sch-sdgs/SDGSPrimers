@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import render_template, request, url_for, redirect, jsonify
 from flask.ext.login import login_required, current_user
-from app.views import admin_required
 from forms import Box, Fill
 from app.models import Primers, Users, Boxes, Freezers, Aliquots
 from app.primers import s
@@ -9,11 +8,6 @@ import json
 
 
 box = Blueprint('box', __name__, template_folder='templates')
-
-def get_user_by_username(s, username):
-    user = s.query(Users).filter_by(username=username)
-    for i in user:
-        return i.id
 
 def box_layout_calculator(box):
     box_layout = {}
@@ -31,24 +25,25 @@ def box_layout_calculator(box):
     a = Aliquots.query.filter_by(box_id=box.id).all()
     print a
     filled={}
+    if p:
+        for primer in p:
 
-    for primer in p:
+            if primer.row not in filled:
+                filled[primer.row]={}
+            if primer.column not in filled[primer.row]:
+                filled[primer.row][primer.column]={}
+                filled[primer.row][primer.column]["primer"]=primer
+                filled[primer.row][primer.column]["aliquot"] =False
 
-        if primer.row not in filled:
-            filled[primer.row]={}
-        if primer.column not in filled[primer.row]:
-            filled[primer.row][primer.column]={}
-            filled[primer.row][primer.column]["primer"]=primer
-            filled[primer.row][primer.column]["aliquot"] =False
+    if a:
+        for aliquot in a:
 
-    for aliquot in a:
-
-        if aliquot.row not in filled:
-            filled[aliquot.row] = {}
-        if primer.column not in filled[aliquot.row]:
-            filled[aliquot.row][aliquot.column] = {}
-            filled[aliquot.row][aliquot.column]["primer"] = s.query(Primers).filter_by(id=aliquot.primer_id).first()
-            filled[aliquot.row][aliquot.column]["aliquot"] = True
+            if aliquot.row not in filled:
+                filled[aliquot.row] = {}
+            if aliquot.column not in filled[aliquot.row]:
+                filled[aliquot.row][aliquot.column] = {}
+                filled[aliquot.row][aliquot.column]["primer"] = s.query(Primers).filter_by(id=aliquot.primer_id).first()
+                filled[aliquot.row][aliquot.column]["aliquot"] = True
 
     for row in range(1, box.rows + 1):
         box_layout[row] = {}
@@ -76,7 +71,6 @@ def box_layout_calculator(box):
 
 @box.route('/view', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_boxes(message=None,modifier=None):
     boxes_query = Boxes.query.all()
     boxes = []
@@ -93,7 +87,6 @@ def view_boxes(message=None,modifier=None):
 
 @box.route('/detail/<int:box_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_box_detail(box_id,message=None,modifier=None):
     box = Boxes.query.filter_by(id=box_id).first()
 
@@ -107,7 +100,6 @@ def view_box_detail(box_id,message=None,modifier=None):
 
 @box.route('/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_box():
     form = Box()
     if request.method == 'POST':
@@ -116,7 +108,7 @@ def add_box():
         b.name = request.form['alias']
         b.columns = request.form['columns']
         b.rows = request.form['rows']
-        b.user = get_user_by_username(s,current_user.id)
+        b.user = current_user.database_id
         b.freezer_id = request.form['freezer']
         b.aliquots = request.form['aliquots']
         s.add(b)
@@ -132,7 +124,6 @@ def add_box():
 
 @box.route('/autocomplete', methods=['GET'])
 @login_required
-@admin_required
 def autocomplete():
     search = request.args.get('q')
     query = s.query(Primers.alias).filter(Primers.alias.like('%' + str(search) + '%'))
@@ -143,7 +134,6 @@ def autocomplete():
 
 @box.route('/fill/<int:box_id>/<int:row>/<int:column>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def fill_box(box_id,row,column):
     form = Fill()
 

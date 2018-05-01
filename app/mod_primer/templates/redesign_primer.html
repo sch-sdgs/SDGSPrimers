@@ -8,24 +8,36 @@
             <form action="{{url_for('primer.add_primer')}}" method="post" class="form-horizontal">
                 <fieldset>
 
-                    <legend>Add Primer</legend>
+                    <legend>Re-Design Primer</legend>
+
+                    <div class="alert alert-danger">
+                        <div class="row">
+                            <div class="col-md-10">
+                        <strong>WARNING! You must complete this form or click "Undo"</strong>
+                                </div>
+                                <div class="col-md-2">
+                        <a href="/primer/redesign_undo/{{ primer_id }}" class="btn btn-sm btn-default">Undo</a>
+                           </div>
+                            </div>
+                    </div>
                     <div class="form-group">
-                         {{ form.pair_id }}
+                        {{ form.pair_id }}
                     </div>
                     <div class="form-group">
                         {{ form.alias.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                            {{ form.alias(required="required",class_="form-control") }}
+                            {{ form.alias(required="required",class_="form-control",readonly=true) }}
+                            <span class="help-block">The primer alias will remain the same!</span>
                         </div>
                     </div>
 
-                     <div class="form-group">
+                    <div class="form-group">
                         {{ form.chromosome.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
-                             <div class="input-group">
+                            <div class="input-group">
                                 <span class="input-group-addon">chr</span>
-                            {{ form.chromosome(required="required",class_="form-control") }}
-                                 </div>
+                                {{ form.chromosome(required="required",class_="form-control") }}
+                            </div>
                         </div>
                     </div>
 

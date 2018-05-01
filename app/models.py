@@ -1,5 +1,6 @@
 from app.primers import db
 from app.main import app
+import datetime
 
 import sys
 
@@ -9,19 +10,63 @@ else:
     enable_search = True
     import flask_whooshalchemy as whooshalchemy
 
+class UserRolesRef(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(1000), unique=True, nullable=False)
+
+    def __init__(self, role):
+        self.role = role
+
+    def __repr__(self):
+        return '<UserRolesRef %r>' % self.role
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=False)
-    admin = db.Column(db.Integer)
+    login = db.Column(db.String(1000), unique=True, nullable=False)
+    first_name = db.Column(db.String(1000), unique=False, nullable=False)
+    last_name = db.Column(db.String(1000), unique=False, nullable=False)
+    email = db.Column(db.String(1000), unique=False, nullable=False)
+    staff_no = db.Column(db.String(1000), unique=False, nullable=False)
+    band = db.Column(db.String(3), unique=False, nullable=False)
+    date_created = db.Column(db.DATE, unique=False, nullable=False)
+    last_login = db.Column(db.DATE, unique=False, nullable=True)
+    active = db.Column(db.BOOLEAN, unique=False, default=True, nullable=False)
 
-    def __init__(self, username, admin):
-        self.username = username
-        self.admin = admin
+    def __init__(self, login, first_name, last_name, email, active, band, staff_no=None):
+        self.login = login
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.band = band
+        self.staff_no = staff_no
+        self.active = active
+        self.date_created = datetime.datetime.now()
+
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'login', self.login
+        yield 'first_name', self.first_name
+        yield 'last_name', self.last_name
+        yield 'email', self.email
+        yield 'date_created', self.date_created
+        yield 'last_login', self.last_login
+        yield 'active', self.active
 
     def __repr__(self):
-        return '<Users %r>' % (self.username)
+        return '<Users %r>' % self.login
 
+
+class UserRoleRelationship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=False, nullable=False)
+    userrole_id=db.Column(db.Integer, db.ForeignKey("user_roles_ref.id"), unique=False, nullable=False)
+
+    user_id_rel = db.relationship("Users", lazy='joined', foreign_keys=[user_id])
+    userrole_id_rel = db.relationship("UserRolesRef", lazy='joined', foreign_keys=[userrole_id])
+
+    def __init__(self, user_id, userrole_id):
+        self.user_id=user_id
+        self.userrole_id=userrole_id
 
 class Freezers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -112,21 +157,21 @@ class Primers(db.Model):
     date_designed = db.Column(db.String(20), unique=False)
     user_designed = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date_checked = db.Column(db.String(20), unique=False)
-    user_checked = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_checked = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     date_ordered = db.Column(db.String(20), unique=False)
-    user_ordered = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_ordered = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     lot_no = db.Column(db.String(30), unique=False)
     date_received = db.Column(db.String(20), unique=False)
-    user_received = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    box_id = db.Column(db.Integer, db.ForeignKey('boxes.id'), nullable=False)
+    user_received = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    box_id = db.Column(db.Integer, db.ForeignKey('boxes.id'), nullable=True)
     row = db.Column(db.Integer, unique=False)
     column = db.Column(db.Integer, unique=False)
     date_reconstituted = db.Column(db.String(20), unique=False)
     concentration = db.Column(db.Integer, unique=False)
-    user_reconstituted = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_reconstituted = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     date_acceptance = db.Column(db.String(20), unique=False)
     worklist = db.Column(db.Integer, unique=False)
-    user_acceptance = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_acceptance = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     # status = db.ForeignKey('status.id')
     status = db.Column(db.Integer, unique=False)
     current = db.Column(db.Integer, unique=False)

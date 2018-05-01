@@ -3,12 +3,13 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <h1><strong><span class="glyphicon glyphicon-briefcase"></span> {{ box.name }}</h1></strong>
+        <h1><strong><span class="glyphicon glyphicon-briefcase"></span> {{ box.name }}</strong></h1>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="well bs-component">
+            <p><strong>Location:</strong> {{box.freezer_rel.name}} ({{box.freezer_rel.location}})</p>
             <h2>Box Status</h2>
             <div class="progress progress-striped">
                 <div class="progress-bar progress-bar-danger" style="width: {{ percent_full }}%">{{ percent_full }}% Full</div>

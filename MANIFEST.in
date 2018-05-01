@@ -1,4 +1,8 @@
 recursive-include app/templates *
 recursive-include app/static *
-recursive-include app/mod_summary/templates *
+recursive-include app/resources *
 recursive-include app/mod_admin/templates *
+recursive-include app/mod_box/templates *
+recursive-include app/mod_primer/templates *
+recursive-include app/mod_freezer/templates *
+recursive-include app/mod_set/templates *

@@ -36,7 +36,7 @@
                         </td>
                         <td>
                             <div class="form-group" id="locations_{{aliquot.id}}">
-                                <select class="form-control input-sm" name="box" id="{{aliquot.id}}">
+                                <select class="form-control input-sm" required="required" name="box" id="{{aliquot.id}}">
                                     <option disabled selected value></option>
                                     {% for box in boxes %}
                                     <option value="{{box}}">{{box}}</option>

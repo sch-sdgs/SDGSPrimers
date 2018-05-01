@@ -16,9 +16,6 @@ app.secret_key = 'development key'
 db = SQLAlchemy(app)
 s = db.session
 
-print app.config["SQLALCHEMY_DATABASE_URI"]
-print app.config["WHOOSH_BASE"]
-
 handler = TimedRotatingFileHandler('PerformanceSummary.log', when="d", interval=1, backupCount=30)
 handler.setLevel(logging.INFO)
 

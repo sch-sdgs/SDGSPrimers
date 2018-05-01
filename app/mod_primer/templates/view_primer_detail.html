@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-12">
         {% if primer.current != 0 %}
-        <h1><strong><span class="glyphicon glyphicon-resize-small"></span> {{ primer.alias }}</strong> chr{{ primer.chrom }}:{{ primer.position }} ({{ convert_orient(primer.orientation) }}) </h1>
+        <h1><strong><span class="glyphicon glyphicon-resize-small"></span> {{ primer.alias }}</strong> {{ primer.chrom }}:{{ primer.position }} ({{ convert_orient(primer.orientation) }}) </h1>
         {% else %}
         <h1><strong><span class="glyphicon glyphicon-remove"></span> {{ primer.alias }}</strong></h1>
         (This primer has been re-ordered)
@@ -84,18 +84,36 @@
                 </table>
 
                 {% if primer.box_rel %}
+                <h3>Location</h3>
                 <h4><span class="glyphicon glyphicon-briefcase"></span> LTS location: <a
                         href="{{ url_for('box.view_box_detail',box_id=primer.box_rel.id)}}"> {{ primer.box_rel.name
                     }}</a> row: {{ primer.row }} column: {{ primer.column }}</h4>
                 {% endif %}
+
+                <h3>Primer History</h3>
+
                 <table class="table table-striped">
+                    <thead>
+                        <th>Stage</th>
+                        <th>Complete</th>
+                        <th>Date</th>
+                        <th>User</th>
+                    </thead>
                     <tr>
                         <td>Designed</td>
                         <td>
                             {{ get_glyphicon(primer.date_designed)|safe }}
+
                             {% if primer.date_designed %}
-                            <strong>designed on:</strong> {{ primer.date_designed }}
-                            <strong>by:</strong> {{ primer.user_designed_rel.username }}
+                                <td>
+                                    {{ primer.date_designed }}
+                                </td>
+                                <td>
+                                   {{ primer.user_designed_rel.first_name }} {{ primer.user_designed_rel.last_name }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
                         </td>
                     </tr>
@@ -104,8 +122,15 @@
                         <td>
                             {{ get_glyphicon(primer.date_checked)|safe }}
                             {% if primer.date_checked %}
-                            <strong>checked on:</strong> {{ primer.date_checked }}
-                            <strong>by:</strong> {{ primer.user_checked_rel.username }}
+                                <td>
+                                    {{ primer.date_checked }}
+                                </td>
+                                <td>
+                                    {{ primer.user_checked_rel.first_name }} {{ primer.user_checked_rel.last_name }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
                         </td>
                     </tr>
@@ -114,8 +139,15 @@
                         <td>
                             {{ get_glyphicon(primer.date_ordered)|safe }}
                             {% if primer.date_ordered %}
-                            <strong>ordered on:</strong> {{ primer.date_ordered }}
-                            <strong>by:</strong> {{ primer.user_ordered_rel.username }}
+                                <td>
+                                    {{ primer.date_ordered }}
+                                </td>
+                                <td>
+                                    {{ primer.user_ordered_rel.first_name }} {{ primer.user_ordered_rel.last_name }}
+                                </td>
+                             {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
                         </td>
                     </tr>
@@ -124,8 +156,15 @@
                         <td>
                             {{ get_glyphicon(primer.date_received)|safe }}
                             {% if primer.date_received %}
-                            <strong>received on:</strong> {{ primer.date_received }}
-                            <strong>by:</strong> {{ primer.user_received_rel.username }}
+                                <td>
+                                    {{ primer.date_received }}
+                                </td>
+                                <td>
+                                    {{ primer.user_received_rel.first_name }} {{ primer.user_received_rel.last_name }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
                         </td>
                     </tr>
@@ -134,8 +173,15 @@
                         <td>
                             {{ get_glyphicon(primer.date_reconstituted)|safe }}
                             {% if primer.date_reconstituted %}
-                            <strong>reconstituted on:</strong> {{ primer.date_reconstituted }}
-                            <strong>by:</strong> {{ primer.user_reconstituted_rel.username }}
+                                <td>
+                                    {{ primer.date_reconstituted }}
+                                </td>
+                                <td>
+                                    {{ primer.user_reconstituted_rel.first_name }} {{ primer.user_reconstituted_rel.last_name }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
 
                         </td>
@@ -145,9 +191,15 @@
                         <td>
                             {{ get_glyphicon(primer.date_acceptance)|safe }}
                             {% if primer.date_acceptance %}
-                            <strong>acceptence tested on:</strong> {{ primer.date_acceptance }}
-                            <strong>by:</strong> {{ primer.user_acceptance_rel.username }}
-                            <strong>worklist:</strong> {{ primer.worklist }}
+                                <td>
+                                    {{ primer.date_acceptance }} ({{ primer.worklist }})
+                                </td>
+                                <td>
+                                    {{ primer.user_acceptance_rel.first_name }} {{ primer.user_acceptance_rel.last_name }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                                <td></td>
                             {% endif %}
 
                         </td>
@@ -225,7 +277,7 @@
                             <tr>
                                 <td>{{ a.id }}</a></td>
                                 <td>{{ a.date_aliquoted }}</td>
-                                <td>{{ a.user_aliquoted_rel.username }}</td>
+                                <td>{{ a.user_aliquoted_rel.first_name }} {{ a.user_aliquoted_rel.last_name }}</td>
                                 {% if a.box_rel %}
                                 <td><a href="{{ url_for('box.view_box_detail',box_id=a.box_rel.id)}}">{{ a.box_rel.name
                                     }}</a> | {{ a.row }} | {{ a.column }}
@@ -270,7 +322,7 @@
                             <tr>
                                 <td><a href="{{a.id}}">{{ a.alias }}</a></td>
                                 <td>{{ a.date_ordered }}</td>
-                                <td>{{ a.user_ordered_rel.username }}</td>
+                                <td>{{ a.user_ordered_rel.first_name }} {{ a.user_ordered_rel.last_name }}</td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -290,7 +342,7 @@
 
                         {% if not pairs %}
                         <a href="{{ url_for('primer.add_primer',pair_id=primer.id)}}" class="btn btn-info">Complete
-                            Pair</a>
+                            Pair (Add a New Primer)</a>
                         {% endif %}
                     </div>
                     <div class="col-md-9 text-right">
@@ -298,18 +350,81 @@
                         <a href="{{ url_for('primer.break_pair',primer_id=primer.id)}}" class="btn btn-default">Un-Pair
                             Primer</a>
                         {% endif %}
-                        <button type="submit" class="btn btn-default">Re-Design Primer</button>
-                        <a href="{{ url_for('primer.reorder_primer',primer_id=primer.id)}}" class="btn btn-default">Re-Order
+                        <a href='#' data-href="{{ url_for('primer.redesign_primer',primer_id=primer.id)}}" data-toggle="modal" data-target="#confirm-re-design" class="btn btn-default">Re-Design Primer</a>
+                        <a href='#' data-href="{{ url_for('primer.reorder_primer',primer_id=primer.id)}}" data-toggle="modal" data-target="#confirm-re-order" class="btn btn-default">Re-Order
                             Primer</a>
+                        {% if admin == True %}
                         <button type="submit" class="btn btn-danger">Trash Primer</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     {% endif %}
 
+    <div class="modal fade" id="confirm-re-order" tabindex="-1" role="dialog" aria-labelledby="confirmreorder" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong>Are you sure you want to re-order this primer?</strong>
+                </div>
+                <div class="modal-body">
+                    This will:
+                    <ul>
+                        <li>set the primer to archived</li>
+                        <li>preserve the history</li>
+                        <li>preserve aliquots that exist from this current batch</li>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Re-Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-re-design" tabindex="-1" role="dialog" aria-labelledby="confirmredesign" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <strong>Are you sure you want to re-design this primer?</strong>
+                </div>
+                <div class="modal-body">
+                    This will:
+                    <ul>
+                        <li>archive the current primer</li>
+                        <li>remove the sequence,chr and position</li>
+                        <li>allow you to re-enter the new sequence</li>
+                        <li>preserve history</li>
+                        <li>delete aliquots</li>
+                    </ul>
+                    <div class="alert alert-danger">
+                        <strong>If you proceed - PLEASE DISPOSE OF ALIQUOTS! They will be deleted from the database.</strong>
+                    </div>
+                    <div class="alert alert-danger">
+                        <strong>If you proceed - YOU MUST COMPLETE THE NEXT PAGE!</strong>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Re-Design</a>
+                </div>
+            </div>
+        </div>
+    </div>
     {% include "comments.html" %}
 </div>
 
+<script type="text/javascript">
+    $('#confirm-re-order').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+    $('#confirm-re-design').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
 {% endblock %}

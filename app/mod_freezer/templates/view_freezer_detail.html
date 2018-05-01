@@ -13,21 +13,8 @@
             {% if message %}
             <div class="alert alert-{{ modifier }}">{{ message }}</div>
             {% endif %}
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="well bs-component">
-                         <table class="table table-striped">
-                                <td>Location</td>
-                                <td>{{ freezer.location }}</td>
-                            </tr>
-                            <tr>
-                                <td>User</td>
-                                <td>{{ freezer.user_rel.username }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <p><strong>Location:</strong> {{ freezer.location }}</p>
+            <p><strong>Created By:</strong> {{ freezer.user_rel.first_name }} {{ freezer.user_rel.last_name }}</p>
         </div>
     </div>
 </div>
@@ -35,22 +22,17 @@
 <div class="row">
     <div class="col-md-12">
         <div class="well bs-component">
-            <h4>This Freezer Contains</h4>
-        </div>
-    </div>
-    </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="well bs-component">
+            <h4>This Freezer Contains:</h4>
             <table class="table table-striped">
                 <thead>
-                    <th>Name</th>
+                <th>Name</th>
                 </thead>
                 {% for box in boxes %}
                 <tr>
                     <td>{{ box.name }}</td>
                 </tr>
                 {% endfor %}
+            </table>
         </div>
     </div>
 </div>

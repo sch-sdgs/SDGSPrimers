@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+<div class="well bs-component">
+<div class="row">
+    <div class="col-lg-12"><h3>Users</h3></div>
+</div>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="well bs-component">
+            <table class="table table-striped" id="users">
+                <thead>
+                <th class="col-md-1">id</th>
+                <th class="col-md-1">Login</th>
+                <th class="col-md-2">Name</th>
+                {% if 'PRIVILEGE' in current_user.roles %}
+                    <th class="col-md-2">Staff No</th>
+                {% endif %}
+                <th class="col-md-2">User Roles</th>
+                <th class="col-md-1">Edit</th>
+                <th class="col-md-1">Active</th>
+                </thead>
+                {% for user in data %}
+                    <tr>
+                        <td>{{ user["id"] }}</td>
+                        <td>{{ user["login"] }}</td>
+                        <td>{{ user["first_name"] }} {{ user["last_name"] }}</td>
+                        {% if 'PRIVILEGE' in current_user.roles %}
+                            <td>{{ user["staff_no"] }}</td>
+                        {% endif %}
+                        <td>
+                            {% for role in user["roles"] %}
+                            {{ role }}<br>
+                            {% endfor %}
+                        </td>
+                        <td><a href="{{ url_for('admin.users_edit',id=user["id"]) }}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                        {% if user["active"] == True %}
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-ok"></span></a></td>
+                        {% endif %}
+                        {% if user["active"] == False %}
+                        <td><a href="{{ url_for('admin.users_toggle_active',id=user["id"]) }}" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span></a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+             </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -9,10 +9,20 @@
     <!--<p><a href="" class="btn btn-default btn-lg">-->
     <!--<span class="glyphicon glyphicon-pencil"></span> Create Your 1st Panel-->
     <!--</a></p>-->
-    Need to register? email your windows login name to <a
-        href="mailto:matthew.parker@sch.nhs.uk?Subject=Primer%20Registration" target="_top">bioinformatics</a>
+    <div>
+        Need to register? email your windows login name to <a
+        href="mailto:matthewparker24+lzj6vkpuibpnivi6nsog@boards.trello.com?Subject=#Primers%20Primer%20Registration"
+        target="_top">bioinformatics</a><br><br>
+    </div>
+    {% if browser == 'msie' or browser == 'seamonkey' %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Warning! </strong>You are using internet explorer, you may have trouble using this application. Go to the <a class="alert-link" href="{{url_for('faq')}}" target="_top">FAQ</a> page for display instructions
+            </div>
+    {% endif %}
+
 </div>
 {% endif %}
+
 
 <div class="row">
     <div class="col-md-12">
@@ -85,7 +95,7 @@
     </div>
 </div>
 
-{% if logged_in == True %}
+{% if current_user.is_authenticated %}
 <div class="row">
     <div class="col-md-12">
         <div class="well bs-component">
@@ -97,7 +107,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                Your Saved Carts
+                <span class="glyphicon glyphicon-shopping-cart"></span> Your Saved Carts
             </div>
             <div class="panel-body">
                 <table class="table table-striped">

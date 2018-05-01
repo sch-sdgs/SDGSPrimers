@@ -14,6 +14,7 @@
                         {{ form.alias.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
                             {{ form.alias(class_="form-control",required="required") }}
+                            <span class="help-block">The name/identifier of the box.</span>
                         </div>
                     </div>
 
@@ -23,7 +24,7 @@
 
 
                             {{ form.columns(class_="form-control number",required="required") }}
-
+                            <span class="help-block">Number of positions in columns in the box.</span>
                         </div>
                     </div>
 
@@ -31,6 +32,7 @@
                         {{ form.rows.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
                             {{ form.rows(class_="form-control",required="required") }}
+                            <span class="help-block">Number of positions in rows in the box.</span>
                         </div>
                     </div>
 
@@ -38,6 +40,7 @@
                         {{ form.freezer.label(class_="col-lg-2 control-label") }}
                         <div class="col-lg-10">
                             {{ form.freezer(class_="form-control") }}
+
                         </div>
                     </div>
 

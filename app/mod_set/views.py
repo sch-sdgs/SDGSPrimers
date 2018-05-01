@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import render_template, request, url_for, redirect
 from flask.ext.login import login_required, current_user
-from app.views import admin_required
 from app.models import Primers, Users, Sets, SetMembers
 from app.primers import s
 from forms import Add, Choose
@@ -17,7 +16,6 @@ def get_user_by_username(s, username):
 
 @set.route('/view', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_sets(message=None,modifier=None):
     #sets = Sets.query.all()
 
@@ -27,7 +25,6 @@ def view_sets(message=None,modifier=None):
 
 @set.route('/detail/<int:set_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def view_set_detail(set_id,message=None,modifier=None):
     set = Sets.query.filter_by(id=set_id).first()
     members = SetMembers.query.filter_by(set_id=set_id).all()
@@ -35,7 +32,6 @@ def view_set_detail(set_id,message=None,modifier=None):
 
 @set.route('/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_set(message=None,modifier=None):
     form = Add()
     if request.method == 'POST':
@@ -57,12 +53,10 @@ def add_set(message=None,modifier=None):
 
 @set.route('/add_members', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_members(message=None,modifier=None):
     form = Choose()
     if request.method == 'POST':
         ids = request.args['ids'].split(",")
-
         for id in ids:
             if s.query(SetMembers).filter_by(primer_id=id).filter_by(set_id=request.form["set"]).count() == 0:
                 sm = SetMembers()
@@ -75,6 +69,9 @@ def add_members(message=None,modifier=None):
         return redirect(url_for('set.view_set_detail', set_id=request.form["set"]))
     else:
         ids = request.args['ids'].split(",")
+        if ids[0] == "":
+            return redirect(url_for('primer.view_primers'))
+
         sets = [(row.id, row.name) for row in Sets.query.filter_by(current=1).all()]
         if len(sets)>0:
             form.set.choices = sets
@@ -87,7 +84,6 @@ def add_members(message=None,modifier=None):
 
 @set.route('/add_to_cart', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_set_to_cart():
     ids = request.args['ids'].split(",")
     primer_ids = []

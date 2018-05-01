@@ -28,7 +28,7 @@
                                                             required="required" name="conc" value="100"><span
                                     class="input-group-addon">μM</span></div>
                         </td>
-                        <td><div class="form-group" id="locations_{{primer.id}}"><select class="form-control input-sm" name="box" id="{{primer.id}}">
+                        <td><div class="form-group" id="locations_{{primer.id}}"><select required="required" class="form-control input-sm" name="box" id="{{primer.id}}">
                             <option disabled selected value></option>
                             {% for box in boxes %}
                                 <option value="{{box}}">{{box}}</option>
